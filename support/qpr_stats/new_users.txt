@@ -1,0 +1,7 @@
+To tally up new CougaarForge users, run the query:
+
+psql -U gforge gforge -c "select user_name, timestamptz 'epoch' + add_date * interval '1 second' as date_added  from users;" > results.txt
+
+then just delete the ones outside the desired date ranges and count the lines with wc.  There almost certainly a way to do this more nicely with SQL, but this clonky way works too.
+
+
