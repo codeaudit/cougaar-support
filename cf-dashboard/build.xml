@@ -64,6 +64,7 @@
 				<formatter toFile="${core.pmd.report}" type="summaryhtml"/>
 				<fileset dir="${core.workdir}/${core.module}/${core.srcdir}">
 					<include name="**/*.java"/>
+					<exclude name="**/java/io/*.java"/>
 				</fileset>
 			</pmd>
 	</target>
@@ -74,6 +75,7 @@
 	   <cpd minimumTokenCount="100" outputFile="${core.cpd.report}">
 				<fileset dir="${core.workdir}/${core.module}/${core.srcdir}">
 					<include name="**/*.java"/>
+					<exclude name="**/java/io/*.java"/>
 				</fileset>
 			</cpd>
 	</target>
