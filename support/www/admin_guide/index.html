@@ -17,7 +17,8 @@ CougaarForge Admin Guide
 <a href="#cust">Customizations</a>
 <br/><a href="#cron">Cron jobs</a>
 <h3>Day to day tasks</h3>
-<a href="#list">Mailing list creation</a>
+<a href="#proj">Project creation</a>
+<br/><a href="#list">Mailing list creation</a>
 <h3>Misc</h3>
 <a href="#db">Doing a DB upgrade</a>
 <br/><a href="#changelog">Changelog</a>
@@ -28,7 +29,7 @@ CougaarForge Admin Guide
 <a name="cust"></a>
 <h4>Customizations</h4>
 <p>
-Here are the details of the our CougaarForge customizations to the standard GForge installation:
+Here are the details of upgrading to a newer version of GForge.  This includes a list of all our customizations to the standard GForge installation:
 
 <pre>
 If upgrading from CVS:
@@ -93,12 +94,23 @@ License clickthru
 www/themes/savannah/menu.php 
 - copy in code from usemodwiki plugin groupmenu hook
 www/docman/view.php
-- tweaking types to ensure PDF mime type was set when appropriate
-Copy in new cron jobs
-
+- tweak types to ensure PDF mime type is set when appropriate
 ================================
 To find changed stuff:
 find /var/www/gforge-3.0/ -type f -ctime +30
+
+Note that we also have a few items in /etc/rc.d/rc.local:
+
+================================
+# Ensure PostgreSQL restarts if the machine crashed
+# and left the old pid
+rm /var/pgsql/data/postmaster.pid
+su -l postgres /var/pgsql/bin/mypg_start
+
+# Start Mailman, but only after MailScanner has started
+/usr/local/mailman/bin/mailmanctl start
+================================
+
 </pre>
 
 <a name="cron"></a>
@@ -237,6 +249,49 @@ GForge requires a bunch of cronjobs to run correctly.   They are currently in th
 
 <hr>
 <h3>Day to day tasks</h3>
+<a name="proj"></a>
+<h4>Project creation</h4>
+<p>
+When a user submits a new project, it goes into a queue.  There's a procedural process to approve the project and then a technical process to actually build all the system resources associated with the project.
+
+<p>Procedurally, all of the site admins (currently Aaron Helsinger, Rich Lazarus, Mark Barger, and Tom Copeland) get an email when a new project proposal is submitted.  One of them then forwards it to the <a href="http://cougaar.org/mailman/listinfo/support-csc-info">support-csc-info</a> mailing list for discussion.  
+<p>If the proposal is rejected, one of the site admins then goes to the "Pending Projects" admin page and clicks the reject button.  If it's accepted, some who has root privileges needs to:
+<ul>
+<li>SSH into CougaarForge</li>
+<li>Check out the "support" module from the "support" project if they haven't done so already</li>
+<li>cd support/</li>
+<li>Assuming the project's unix name is 'cougaardoom' and it's been submitted by a person with a username of 'rlazarus':
+<br/>
+./project.rb -action create -name cougaardoom -admin rlazarus</li>
+<li>Go to the "Pending Projects" page and click "Approve"</li>
+<li>Send an email to the project admin to the effect of:
+<pre>
+Hi Rich -
+
+OK, the CougaarDOOM project should be all set:
+
+http://cougaar.org/projects/cougaardoom/
+
+You might want to read the "new project admin" checklist:
+
+http://cougaar.org/docman/?group_id=7
+
+If you have any questions, please post to the support forum:
+
+http://cougaar.org/forum/forum.php?forum_id=6
+
+Thanks!
+
+Yours,
+
+Aaron Helsinger
+CougaarForge admin team
+</pre>
+</li>
+</ul>
+
+<p>Note that the <code>project.rb</code> script does all the heavy lifting here.  It will create the unix group, the user account (if necessary), the virtual host, the CVS repository, the project web space, the entry in viewcvs.conf, the per-project Wiki, and the Webalizer configuration file.
+
 <a name="list"></a>
 <h4>Mailing list creation</h4>
 <p>
