@@ -17,7 +17,7 @@ mv ~/tmp/gforge/common/ .
 cp -r /tmp/gforge_bkp/www/icons/ www/
 cp -r /tmp/gforge_bkp/www/usage/ www/
 cp -r /tmp/gforge_bkp/www/usage_all/ www/
-cp -r /tmp/gforge_bkp/www/docsredirect/ www/
+cp -r /tmp/gforge_bkp/www/docshostredirect/ www/
 cp -r /tmp/gforge_bkp/www/homepage/ www/
 cp -r /tmp/gforge_bkp/www/errata/ www/
 cp /tmp/gforge_bkp/www/project/showfiles.php www/project/
@@ -31,20 +31,26 @@ cp /tmp/gforge_bkp/www/register/projectinfo.php www/register/
 cp /tmp/gforge_bkp/www/index_std.php www/
 cp /tmp/gforge_bkp/www/robots.txt www/
 cp -r /tmp/gforge_bkp/www/docs/site/ www/docs/site
-cp -R /tmp/gforgebkp/www/themes/cougaarforge www/themes/
-cp -R /tmp/gforgebkp/www/themes/savannah www/themes/
+cp -R /tmp/gforge_bkp/www/themes/cougaarforge www/themes/
+cp -R /tmp/gforge_bkp/www/themes/savannah www/themes/
 
-www/project/admin/index.php - tarballs link should be gone 
+www/project/admin/index.php - remove tarballs link, apply "add user" patch
 
 www/forum/include/ForumHTML.class - change to remove admin link from non-admin
 viewers - hardcoded user_id == 102, blah.
-www/include/project_info.php - Added usage link
+www/include/project_home.php - Add usage link
 
 Change in www/download.php Header("Content-type: application/octet-stream");
 
 Run any new SQL updates
 
 Make changes to Base.tab - "Login with SSL" -> Login
+www/include/features_boxes.php 
+	- Remove "Highest Ranked Users"
+	- change 'most active' query to return 10 projects
+	- add a "-5" to the "active projects" query
+
+Edit www/scm/index.php, delete the beta viewers
 
 
 ================================
