@@ -17,13 +17,16 @@ class Project
   def ant_text_output
     preamble + "_ant.txt"
   end
+  def ncss_output
+    preamble + "_ncss.txt"
+  end
   def preamble
     @repo + "_" + @mod + "_" + @tag
   end
 end
 
 class BuildResult
-	attr_accessor :compile_succeeded, :deprecation_warnings, :built_at
+	attr_accessor :compile_succeeded, :deprecation_warnings, :built_at, :loc
 end
 
 class Build 
@@ -46,11 +49,13 @@ class Build
 		@projects.each {|p| 
 			br = BuildResult.new
 			parse_ant_build_output(prepend_working_dir(p.ant_xml_output),br)
+			br.loc = parse_element(REPORTS + "/" + p.ncss_output, "javancss/ncss")
 			output << fm["row.frag", {"repository"=>p.repo, 		
 																"color"=>br.compile_succeeded ? "#00FF00" : "red", 
 																"module"=>p.mod, 
 																"cvsTag"=>p.tag, 
 																"builtAt"=>br.built_at, 
+																"loc"=>br.loc, 
 																"deps"=>br.deprecation_warnings}]	
 		}
 		output << fm["footer.frag"]
@@ -63,6 +68,8 @@ class Build
 		@projects.each {|p|
 			cmd = "ant -v -listener org.apache.tools.ant.XmlLogger -DXmlLogger.file=#{REPORTS}#{p.ant_xml_output} -buildfile build.xml -logfile #{REPORTS}#{p.ant_text_output} -Dcore.workdir=#{TMP} -Dcore.repository=#{p.repo} -Dcore.module=#{p.mod} -Dcore.cvsTag=#{p.tag} -Dcore.cvsroot=#{CVS_ROOT} -Dcore.srcdir=#{p.srcdir} timestamp checkout compile "
 			`#{cmd}`
+      `find #{TMP}/#{p.mod}/#{p.srcdir} -name *.java > #{TMP}/javancssfiles.txt`
+			`/usr/local/javancss/bin/javancss @#{TMP}/javancssfiles.txt -xml > #{REPORTS}#{p.ncss_output}`
 		}
 	end
 	def clean		
@@ -91,6 +98,9 @@ class Build
       end
     end
     return result
+  end
+  def parse_element(f, name)
+    (REXML::Document.new(File.new(f))).elements[name].text
   end
 end
 
