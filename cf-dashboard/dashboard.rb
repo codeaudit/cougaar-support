@@ -47,7 +47,7 @@ class ProjectGroup
 		@projects << p
 	end
 	def delete_all_but_first
-		@projects.delete_if {|a| @projects.index(a) > 0 }
+		@projects.delete_if {|a| @projects.index(a) > 3 }
 	end
 end
 
@@ -109,6 +109,57 @@ class Build
    	Dir.mkdir(REPORTS) unless File.exist?(REPORTS)
 		glom_classpath
 	end
+	def get_third_party_jars
+		`rm -rf jars/`
+		`cvs -Q -d#{CVS_ROOT}core export -D tomorrow #{Build::JARS}`
+	end
+	def glom_classpath
+		ENV["CLASSPATH"] = "/usr/local/pmd-1.5/lib/pmd-1.5.jar:"
+		ENV["CLASSPATH"] += ":/usr/local/pmd-1.5/lib/jaxen-core-1.0-fcs.jar:"
+		ENV["CLASSPATH"] += ":/usr/local/pmd-1.5/lib/saxpath-1.0-fcs.jar:"
+		ENV["CLASSPATH"] += ":" + BUILD_ROOT + TMP + ":" + BUILD
+		Dir.new(JARS).entries.select {|x| (x == "." or x == "..") ? nil : x}.compact.each {|jar| 
+			ENV["CLASSPATH"] += ":" + BUILD_ROOT + JARS + jar + ":"
+		}
+		end
+	def build
+		@pg.projects.each {|p|
+			puts "Building " + p.title + "/" + p.mod if @verbose
+			p.check_out
+			defrunner = p.uses_defrunner ? "defrunner" : ""
+			cmd = "ant -listener org.apache.tools.ant.XmlLogger "
+			cmd += "-DXmlLogger.file=#{REPORTS}#{p.ant_xml_output} "
+			cmd += "-buildfile build.xml -logfile #{BUILD}#{p.ant_text_output} "
+			cmd += "-Dcore.workdir=#{TMP} "
+			cmd += "-Dcore.module=#{p.mod} "
+			cmd += "-Dcore.cvsTag=#{p.tag} "
+			cmd += "-Dcore.cvsroot=#{CVS_ROOT} "
+			cmd += "-Dcore.srcdir=#{p.srcdir} "
+			cmd += "-Dcore.pmd.report=#{PMD + p.pmd_output} "
+			cmd += "-Dcore.cpd.report=#{CPD + p.cpd_output} "
+			cmd += "timestamp #{defrunner} compile pmd cpd"
+			`#{cmd}`
+
+			# JavaNCSS processing
+      `find #{TMP}/#{p.mod}/#{p.srcdir} -name *.java > #{TMP}/javancssfiles.txt`
+			`/usr/local/javancss/bin/javancss @#{TMP}/javancssfiles.txt -xml > #{REPORTS}#{p.ncss_output}`
+
+			# Prepend PMD report with some metadata
+			pmd_text = ""
+			File.read(BUILD_ROOT + PMD + p.pmd_output).each {|x| pmd_text << x } unless !File.exist?(BUILD_ROOT + PMD + p.pmd_output)
+			pmd_header = "# Date: " + Time.now.to_s + "<br>"
+			pmd_header = pmd_header + "# Module: " + p.mod + "<br>"
+			pmd_header = pmd_header + "# Repository: " + CVS_ROOT + p.repo + "<br>"
+			pmd_header = pmd_header + "# Tag: " + p.tag + "<br>"
+			pmd_header = pmd_header + "# Rulesets: unusedcode.xml<br>"
+			File.open(BUILD_ROOT + PMD + p.pmd_output, "w") {|file| file.syswrite(pmd_header + pmd_text)}
+			
+			# clean up
+			cmd = "rm -rf " + TMP + p.mod
+			`#{cmd}` 
+			FileUtils.mkdir_p(TMP + "build/") if p.mod == "build" # tricky tricky!
+		}
+	end
 	def render
 		fm=Ikko::FragmentManager.new
     fm.base_path="./"
@@ -136,37 +187,6 @@ class Build
 		}
 		output << fm["footer.frag", {"time"=>Time.new, "loc"=>summary.loc}]
 		output
-	end
-	def get_third_party_jars
-		`rm -rf jars/`
-		`cvs -Q -d#{CVS_ROOT}core export -D tomorrow #{Build::JARS}`
-	end
-	def glom_classpath
-		ENV["CLASSPATH"] = "/usr/local/pmd-1.5/lib/pmd-1.5.jar:"
-		ENV["CLASSPATH"] += ":/usr/local/pmd-1.5/lib/jaxen-core-1.0-fcs.jar:"
-		ENV["CLASSPATH"] += ":/usr/local/pmd-1.5/lib/saxpath-1.0-fcs.jar:"
-		ENV["CLASSPATH"] += ":" + BUILD_ROOT + TMP + ":" + BUILD
-		Dir.new(JARS).entries.select {|x| (x == "." or x == "..") ? nil : x}.compact.each {|jar| 
-			ENV["CLASSPATH"] += ":" + BUILD_ROOT + JARS + jar + ":"
-		}
-		end
-	def build
-		pg.projects.each {|p|
-			puts "Building " + p.title + "/" + p.mod if @verbose
-			p.check_out
-			defrunner = p.uses_defrunner ? "defrunner" : ""
-			cmd = "ant -listener org.apache.tools.ant.XmlLogger -DXmlLogger.file=#{REPORTS}#{p.ant_xml_output} -buildfile build.xml -logfile #{BUILD}#{p.ant_text_output} -Dcore.workdir=#{TMP} -Dcore.module=#{p.mod} -Dcore.cvsTag=#{p.tag} -Dcore.cvsroot=#{CVS_ROOT} -Dcore.srcdir=#{p.srcdir} -Dcore.pmd.report=#{PMD + p.pmd_output} -Dcore.cpd.report=#{CPD + p.cpd_output} timestamp #{defrunner} compile pmd cpd"
-			`#{cmd}`
-
-			# JavaNCSS processing
-      `find #{TMP}/#{p.mod}/#{p.srcdir} -name *.java > #{TMP}/javancssfiles.txt`
-			`/usr/local/javancss/bin/javancss @#{TMP}/javancssfiles.txt -xml > #{REPORTS}#{p.ncss_output}`
-
-			# clean up
-			cmd = "rm -rf " + TMP + p.mod
-			`#{cmd}` 
-			FileUtils.mkdir_p(TMP + "build/") if p.mod == "build" # tricky tricky!
-		}
 	end
 	def prepend_working_dir(name)
 		REPORTS + name
