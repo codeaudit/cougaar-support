@@ -51,6 +51,7 @@ class Project
 		puts "rm -f #{HTTPD_LOG_DIR}#{@name}-error_log" if File.exists?("#{HTTPD_LOG_DIR}#{@name}-error_log")
 		puts "rm -rf #{CVSROOT}#{@name}"
 		puts "rm -rf /var/www/gforge-projects/#{@name}"
+		puts "rm -rf /var/www/gforge3-files/#{@name}"
 	end
 	def add_group_and_user(admin)
 		`/usr/sbin/groupadd #{@name}`
@@ -168,7 +169,7 @@ class GForge
 			httpd << line
 		}
 		File.open("httpd.conf.new", "w") {|f| f.write(httpd) }
-		#puts `#{APACHECTL} restart`
+		puts `#{APACHECTL} restart`
 	end
 end
 
