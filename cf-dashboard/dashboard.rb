@@ -214,9 +214,9 @@ if __FILE__ == $0
 	b.add_project Project.new("Yellow Pages","yp","yp","src","HEAD",false)
 	b.add_project Project.new("Web Server","webserver","webserver","src","HEAD",false)
 	b.add_project Project.new("Web Tomcat","webserver","webtomcat","src","HEAD",false)
+	b.add_project Project.new("MTS","mts","mtsstd","src","HEAD",false)
 	b.add_project Project.new("Qos","qos","qos","src","HEAD",false)
 	b.add_project Project.new("Quo","qos","quo","src","HEAD",false)
-	b.add_project Project.new("MTS","mts","mtsstd","src","HEAD",false)
 	b.add_project Project.new("Planning","planning","planning","src","HEAD",true)
 	b.add_project Project.new("Aggregation Agent","aggagent","aggagent","src","HEAD",false) # depends on Planning defs
 	b.add_project Project.new("Community","community","community","src","HEAD", false) # depends on Planning defs
