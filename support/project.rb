@@ -114,12 +114,28 @@ end
 
 class GForge
 	def project_unix_names	
-		# obtained via ruby -e "Dir.glob('/cvsroot/*').each {|x| print '\"' + x.split('/').last + '\",' unless x =~ /(commitmailer|prototype)/}"
-		#["support"]
-		["tutorials","micro","cougaarunit","support","cougaar","cui","csmart","cougaarlegacy","bol2","cougaaride","vishnu","glm","qos","core","webserver","aggagent","cf-ruby-cvs-exp","build","community","planning","profiler","util","servicediscovery","yp","delta-blackjack","cougaar-pmd","mts","message-router","ccm","acme"]
+		Dir.glob('/cvsroot/*').collect {|x| x.split('/').last unless x =~ /(commitmailer|prototype)/}.compact
 	end
 	def wiki_dir(name)
 		"#{WWW_DIR_PREFIX}#{name}/wiki/"
+	end
+	def fix_webalizer
+		template = File.read("/etc/webalizer/csmart.conf")
+		project_unix_names.each {|p| 
+			next if p == "csmart"
+			puts "Doing #{p}"
+			File.open("/etc/webalizer/#{p}.conf", "w") {|file|
+				template.each {|line|
+					if line =~ /csmart/
+						file.write(line.gsub(/csmart/, p))
+					else
+						file.write(line)
+					end
+				}
+			}	
+			#cmd  = "cat /etc/webalizer/csmart.conf | sed -e 's/csmart/#{p}/g' > /etc/webalizer/#{p}.conf"
+			#puts "Doing #{p}: #{cmd}"
+		}
 	end
 	def wiki_setup_files
 		project_unix_names.each {|p|
@@ -174,6 +190,9 @@ if __FILE__ == $0
 	elsif action == "wiki-setup-httpd"
 		g = GForge.new
 		g.wiki_setup_httpd
+	elsif action == "fix-webalizer"
+		g = GForge.new
+		g.fix_webalizer
 	else
 		puts "Unknown action: #{action}"
 	end
