@@ -12,5 +12,7 @@ rm -rf /cvsroot/fiddle
 
 /usr/sbin/groupdel fiddle
 
+Delete any mailing lists from /etc/aliases; run newaliases
+
 If the users have no other projects, remove them
 
