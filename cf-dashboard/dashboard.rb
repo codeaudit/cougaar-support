@@ -67,7 +67,7 @@ class ProjectGroup
 		@projects << Project.new("Pizza","tutorials","pizza","src","HEAD",true)
 	end
 	def delete_all_but_first
-		@projects.delete_if {|a| @projects.index(a) > 3 }
+		@projects.delete_if {|a| @projects.index(a) > 1 }
 	end
 end
 
@@ -134,9 +134,9 @@ class Build
 		`cvs -Q -d#{CVS_ROOT}core export -D tomorrow #{Build::JARS}`
 	end
 	def glom_classpath
-		ENV["CLASSPATH"] = "/usr/local/pmd-1.5/lib/pmd-1.5.jar:"
-		ENV["CLASSPATH"] += ":/usr/local/pmd-1.5/lib/jaxen-core-1.0-fcs.jar:"
-		ENV["CLASSPATH"] += ":/usr/local/pmd-1.5/lib/saxpath-1.0-fcs.jar:"
+		ENV["CLASSPATH"] = "/usr/local/pmd-1.9/lib/pmd-1.9.jar:"
+		ENV["CLASSPATH"] += ":/usr/local/pmd-1.9/lib/jaxen-core-1.0-fcs.jar:"
+		ENV["CLASSPATH"] += ":/usr/local/pmd-1.9/lib/saxpath-1.0-fcs.jar:"
 		ENV["CLASSPATH"] += ":" + BUILD_ROOT + TMP + ":" + BUILD
 		Dir.new(JARS).entries.select {|x| (x == "." or x == "..") ? nil : x}.compact.each {|jar| 
 			ENV["CLASSPATH"] += ":" + BUILD_ROOT + JARS + jar + ":"
