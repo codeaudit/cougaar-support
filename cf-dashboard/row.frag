@@ -1,5 +1,5 @@
 <tr>
-<td><!--Fragment key="repository"--></td>
+<td><!--Fragment key="title"--></td>
 <td bgcolor=<!--Fragment key="color"-->><!--Fragment key="module"--></td>
 <td width="10%"><!--Fragment key="cvsTag"--></td>
 <td width="10%"><!--Fragment key="builtAt"--></td>

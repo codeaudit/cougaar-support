@@ -4,8 +4,9 @@ require 'ikko.rb'
 require 'rexml/document'
 
 class Project
-	attr_reader :repo, :mod, :srcdir, :tag
-	def initialize(repo,mod,srcdir,tag)
+	attr_reader :repo, :mod, :srcdir, :tag, :title
+	def initialize(title,repo,mod,srcdir,tag)
+		@title = title
 		@repo = repo
 		@mod = mod
 		@srcdir = srcdir
@@ -77,7 +78,7 @@ class Build
       else
         cpd="<a href=\"#{CPD}/#{p.cpd_output}\">#{br.cpd}</a>"
       end
-			output << fm["row.frag", {"repository"=>p.repo, 		
+			output << fm["row.frag", {"title"=>p.title, 		
 																"color"=>br.compile_succeeded ? "#00FF00" : "red", 
 																"module"=>"<a href=\"#{BUILD + p.ant_text_output}\">#{p.mod} (#{br.deprecation_warnings})</a>", 
 																"cvsTag"=>p.tag, 
@@ -185,13 +186,15 @@ if __FILE__ == $0
 		ENV["CLASSPATH"] += ":/home/tom/data/cf-dashboard/jars/lib/" + jar + ":"
 	}
 	
-	b.add_project Project.new("core","javaiopatch","src","B10_4")
-	b.add_project Project.new("util","bootstrap","src","B10_4")
-	b.add_project Project.new("util","server","src","B10_4")
-	b.add_project Project.new("util","util","src","B10_4")
-	b.add_project Project.new("util","contract","src","B10_4")
-
+	b.add_project Project.new("Core","core","core","src","B10_4")
 	b.build if ARGV.include?("-b") 
+
+	b.add_project Project.new("Core","core","javaiopatch","src","B10_4")
+	b.add_project Project.new("Utilities","util","bootstrap","src","B10_4")
+	b.add_project Project.new("Utilities","util","server","src","B10_4")
+	b.add_project Project.new("Utilities","util","util","src","B10_4")
+	b.add_project Project.new("Utilities","util","contract","src","B10_4")
+
 
 	if ARGV.include?("-r") 
 		File.open("index.html", "w") {|file| file.syswrite(b.render)}
