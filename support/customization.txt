@@ -18,7 +18,6 @@ cp -r /tmp/gforge_bkp/www/icons/ www/
 cp -r /tmp/gforge_bkp/www/usage/ www/
 cp -r /tmp/gforge_bkp/www/usage_all/ www/
 cp -r /tmp/gforge_bkp/www/docshostredirect/ www/
-cp -r /tmp/gforge_bkp/www/homepage/ www/
 cp -r /tmp/gforge_bkp/www/errata/ www/
 cp /tmp/gforge_bkp/www/project/showfiles.php www/project/
 cp /tmp/gforge_bkp/www/project/clickthru.php www/project/
