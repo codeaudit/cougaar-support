@@ -60,7 +60,7 @@
 	<target name="pmd">
 		<delete file="${core.pmd.report}"/>
 		<taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask"/>
-			<pmd rulesetfiles="rulesets/unusedcode.xml" shortFilenames="true">
+			<pmd rulesetfiles="rulesets/basic.xml,rulesets/unusedcode.xml" shortFilenames="true">
 				<formatter toFile="${core.pmd.report}" type="summaryhtml"/>
 				<fileset dir="${core.workdir}/${core.module}/${core.srcdir}">
 					<include name="**/*.java"/>
