@@ -110,9 +110,9 @@ class Build
 		`cvs -Q -d:pserver:anonymous@cougaar.org:/cvsroot/core export -D tomorrow jars/lib/`
 	end
 	def glom_classpath
-		ENV["CLASSPATH"] = "/usr/local/pmd-1.3/lib/pmd-1.3.jar:"
-		ENV["CLASSPATH"] += ":/usr/local/pmd-1.3/lib/jaxen-core-1.0-fcs.jar:"
-		ENV["CLASSPATH"] += ":/usr/local/pmd-1.3/lib/saxpath-1.0-fcs.jar:"
+		ENV["CLASSPATH"] = "/usr/local/pmd-1.5/lib/pmd-1.5.jar:"
+		ENV["CLASSPATH"] += ":/usr/local/pmd-1.5/lib/jaxen-core-1.0-fcs.jar:"
+		ENV["CLASSPATH"] += ":/usr/local/pmd-1.5/lib/saxpath-1.0-fcs.jar:"
 		ENV["CLASSPATH"] += ":/home/tom/data/cf-dashboard/#{TMP}#{BUILD}:"
 		Dir.new("jars/lib/").entries.select {|x| (x == "." or x == "..") ? nil : x}.compact.each {|jar| 
 			ENV["CLASSPATH"] += ":/home/tom/data/cf-dashboard/jars/lib/" + jar + ":"
@@ -202,7 +202,10 @@ if __FILE__ == $0
 		exit
 	end
 	
+
 	b.add_project Project.new("Utilities","util","bootstrap","src","HEAD")
+	b.build if ARGV.include?("-b") 
+
 	b.add_project Project.new("Utilities","util","server","src","HEAD")
 	b.add_project Project.new("Utilities","util","util","src","HEAD")
 	b.add_project Project.new("Utilities","util","contract","src","HEAD")
@@ -215,7 +218,6 @@ if __FILE__ == $0
 	b.add_project Project.new("Quo","qos","quo","src","HEAD")
 	b.add_project Project.new("MTS","mts","mtsstd","src","HEAD")
 
-	b.build if ARGV.include?("-b") 
 	if ARGV.include?("-r") 
 		File.open("index.html", "w") {|file| file.syswrite(b.render)}
 	end
