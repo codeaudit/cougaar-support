@@ -3,4 +3,6 @@ Update Webalizer stuff
 Update all DNS
 Change host name
 Edit /etc/mail/local-host-names
-
+Update the new_project_admin checklist
+Are there any hardcoded host names in the /var/www/gforge-projects/
+directories?
