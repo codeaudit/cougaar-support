@@ -21,3 +21,8 @@ ssh -2 alp-5, edit /var/named/db.cougaar.org, add hostname, change serial
 number, restart
 
 Send email to project admin, saying "pls read new project admin doc"
+
+Add a new Webalizer run:
+cd /etc/webalizer/
+cat csmart-webalizer.conf | sed -e 's/csmart/cougaaride/g' >
+cougaaride-webalizer.conf
