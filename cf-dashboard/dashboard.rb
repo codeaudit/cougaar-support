@@ -44,12 +44,14 @@ class Build
 	TMP = "working/"
 	PMD = "pmd/"
 	CPD = "cpd/"
+	BUILD = "build/"
 	REPORTS = "reports/"
 	def initialize()
 		@projects = []
    	Dir.mkdir(TMP) unless File.exist? TMP
    	Dir.mkdir(CPD) unless File.exist? CPD
    	Dir.mkdir(PMD) unless File.exist? PMD
+   	Dir.mkdir(BUILD) unless File.exist? BUILD
    	Dir.mkdir(TMP + "build") unless File.exist? TMP + "build"
    	Dir.mkdir(REPORTS) unless File.exist?(REPORTS)
 	end
@@ -76,8 +78,7 @@ class Build
       end
 			output << fm["row.frag", {"repository"=>p.repo, 		
 																"color"=>br.compile_succeeded ? "#00FF00" : "red", 
-																"module"=>p.mod, 
-																"deps"=>br.deprecation_warnings,
+																"module"=>"<a href=\"#{BUILD + p.ant_text_output}\">#{p.mod} (#{br.deprecation_warnings})</a>", 
 																"cvsTag"=>p.tag, 
 																"builtAt"=>br.built_at, 
 																"loc"=>br.loc, 
@@ -93,7 +94,7 @@ class Build
 	def build
 		get_third_party_jars
 		@projects.each {|p|
-			cmd = "ant -v -listener org.apache.tools.ant.XmlLogger -DXmlLogger.file=#{REPORTS}#{p.ant_xml_output} -buildfile build.xml -logfile #{REPORTS}#{p.ant_text_output} -Dcore.workdir=#{TMP} -Dcore.repository=#{p.repo} -Dcore.module=#{p.mod} -Dcore.cvsTag=#{p.tag} -Dcore.cvsroot=#{CVS_ROOT} -Dcore.srcdir=#{p.srcdir} -Dcore.pmd.report=#{PMD + p.pmd_output} -Dcore.cpd.report=#{CPD + p.cpd_output} timestamp checkout compile pmd cpd"
+			cmd = "ant -listener org.apache.tools.ant.XmlLogger -DXmlLogger.file=#{REPORTS}#{p.ant_xml_output} -buildfile build.xml -logfile #{BUILD}#{p.ant_text_output} -Dcore.workdir=#{TMP} -Dcore.repository=#{p.repo} -Dcore.module=#{p.mod} -Dcore.cvsTag=#{p.tag} -Dcore.cvsroot=#{CVS_ROOT} -Dcore.srcdir=#{p.srcdir} -Dcore.pmd.report=#{PMD + p.pmd_output} -Dcore.cpd.report=#{CPD + p.cpd_output} timestamp checkout compile pmd cpd"
 			`#{cmd}`
 
 			# JavaNCSS processing
@@ -106,6 +107,12 @@ class Build
 	end
 	def prepend_working_dir(name)
 		REPORTS + name
+	end
+	def copy_up
+		`scp index.html cougaar.png tom@cougaar.org:/var/www/gforge-projects/support/build/`
+		`scp pmd/* tom@cougaar.org:/var/www/gforge-projects/support/build/pmd/`
+		`scp cpd/* tom@cougaar.org:/var/www/gforge-projects/support/build/cpd/`
+		`scp build/* tom@cougaar.org:/var/www/gforge-projects/support/build/build/`
 	end
   def parse_cpd_output(f, result)
     if !File.exists?(CPD + f) or File.size(CPD + f) < 10
@@ -161,4 +168,5 @@ if __FILE__ == $0
 	b.add_project Project.new("core","javaiopatch","src","B10_4")
 	b.build if ARGV.include?("-b") 
 	puts b.render if ARGV.include?("-r") 
+	b.copy_up if ARGV.include?("-copy") 
 end
