@@ -1,4 +1,19 @@
 Copy over the Majordomo archive file (foo.mbox)
 Run convert.sh to set permissions/ownership and add CR
 Run /usr/local/mailman/bin/arch foo
+
+Copy over the Majordomo member file (foo)
+[root@cougaarforge mailman]# bin/sync_members --welcome-msg=no
+--notifyadmin=no --file /home/tom/bugs-support bugs-support
+Added  : tom@infoether.com
+Added  : cerys@bbn.com
+Added  : rlazarus@bbn.com
+Added  : jcoffman@bbn.com
+Added  : bdepass@bbn.com
+Added  : wwright@bbn.com
+Added  : mthome@bbn.com
+Added  : rtomlinson@bbn.com
+Added  : ahelsinger@bbn.com
+[root@cougaarforge mailman]#
+
 Celebrate!

@@ -1,4 +1,6 @@
 Change license wget in clickthru to point to new address
 Update Webalizer stuff
 Update all DNS
+Change host name
+Edit /etc/mail/local-host-names
 
