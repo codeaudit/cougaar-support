@@ -1,0 +1,75 @@
+Here's a rough overview of the steps I took to upgrade CougaarForge to PostgreSQL 7.4.5 (from 7.3.2) and PHP 4.3.8 (from 4.2.3):
+
+Compiling PostgreSQL
+- Required newer version of Bison; downloaded bison-1.875.tar.gz,
+  ./configure && make && make install
+- Untarr'd postgresql-7.4.5.tar.gz into /usr/local/src
+- ./configure --prefix=/var/pgsql && make && make install
+
+Compiling PHP
+- Untarr'd php-4.3.8.tar.gz into /usr/local/src
+- ./configure  --enable-cli --with-apache=../apache_1.3.31
+  --with-pgsql=/usr/local/pgsql --with-gd --with-zlib-dir=/usr/include 
+-- oops, needs libpng-devel, installed libpng-devel-1.2.2-8.i386.rpm, that
+fixed it
+-- make && make install
+
+Recompiling Apache
+- recompiled Apache to make sure new PHP module was all set
+-- also moving Apache layout from GNU to Apache
+-- ./configure --with-layout=Apache --enable-shared=max
+--activate-module=src/modules/php4/libphp4.a --enable-shared=php4
+-- make && make install
+
+Shutdown webserver
+
+Backup database
+- took 2 minutes, 35 seconds, created a 411 MB tar file
+- /etc/rc.d/init.d/postgresql stop
+
+Uninstall old PG version
+- rpm -e postgresql postgresql-devel postgresql-server postgresql-docs
+postgresql-libs php-pgsql
+
+Start up new DB engine
+- edit /etc/profile
+-- add "PGDATA=/var/pgsql/data" and export
+-- add /var/pgsql/bin/ to PATH
+- /usr/sbin/groupadd postgres
+- /usr/sbin/useradd -g postgres postgres
+- mkdir /var/pgsql/data && chown postgres:postgres /var/pgsql/data && chmod g+s
+/var/pgsql/data
+- touch /var/log/postgresql.log && chown postgres:postgres
+  /var/log/postgresql.log
+- initdb -D /var/pgsql/data
+- edit /var/pgsql/data/pg_hba.conf
+-- remove IPv6 record
+- su -l postgres
+- run /var/pgsql/bin/mypg_start
+- createuser gforge -W
+- createdb -U gforge gforge
+- pg_restore -d gforge < /var/backups/pgsql/Fri.tar.gz 
+-- took 5 minutes, 46 seconds
+
+Started up webserver
+- edited httpd.conf, moved logs to /var/log/httpd/
+- removed front page news item
+- deleted webserver files from old gnu-style locations
+- updated /etc/webalizer/* to point to new logs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
