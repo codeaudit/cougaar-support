@@ -38,6 +38,19 @@ class Project
 	end
 end
 
+class ProjectGroup
+	attr_accessor :projects
+	def initialize	
+		@projects = []
+	end
+	def add_project(p)
+		@projects << p
+	end
+	def delete_all_but_first
+		@projects.delete_if {|a| @projects.index(a) > 0 }
+	end
+end
+
 class BuildResult
 	attr_accessor :compile_succeeded, :deprecation_warnings, :built_at, :loc, :cpd
 	attr_reader :pmd
@@ -54,6 +67,20 @@ class BuildResult
 	end
 end
 
+class Summary
+	def initialize
+		@build_results = []
+	end
+	def add_build_result(br)
+		@build_results << br
+	end
+	def loc
+		sum = 0
+		@build_results.each {|x| sum += x.loc.to_i }
+		return sum	
+	end
+end
+
 class Build 
 	CVS_ROOT = ":pserver:anonymous@cougaar.org:/cvsroot/"
 	BUILD_ROOT = "/home/tom/data/cf-dashboard/"
@@ -64,8 +91,8 @@ class Build
 	REPORTS = "reports/"
 	JARS = "jars/lib/"
 	WWW = "tom@cougaar.org:/var/www/gforge-projects/support/build/"
-	def initialize(verbose)
-		@projects = []
+	def initialize(verbose, pg)
+		@pg = pg
 		@verbose = verbose
 		ENV['JAVA_HOME']="/usr/local/java"
 		ENV['ANT_HOME']="/usr/local/ant"
@@ -82,14 +109,12 @@ class Build
    	Dir.mkdir(REPORTS) unless File.exist?(REPORTS)
 		glom_classpath
 	end
-	def add_project(p)
-		@projects << p
-	end
 	def render
 		fm=Ikko::FragmentManager.new
     fm.base_path="./"
     output=fm["header.frag"]
-		@projects.each {|p| 	
+		summary = Summary.new
+		@pg.projects.each {|p| 	
 			puts "Rendering " + p.title + "/" + p.mod if @verbose
 			br = BuildResult.new
 			parse_ant_build_output(prepend_working_dir(p.ant_xml_output),br)
@@ -107,8 +132,9 @@ class Build
 																"pmd"=>pmd, 
 																"cpd"=>cpd 
 																}]	
+			summary.add_build_result(br)
 		}
-		output << fm["footer.frag", {"time"=>Time.new}]
+		output << fm["footer.frag", {"time"=>Time.new, "loc"=>summary.loc}]
 		output
 	end
 	def get_third_party_jars
@@ -125,7 +151,7 @@ class Build
 		}
 		end
 	def build
-		@projects.each {|p|
+		pg.projects.each {|p|
 			puts "Building " + p.title + "/" + p.mod if @verbose
 			p.check_out
 			defrunner = p.uses_defrunner ? "defrunner" : ""
@@ -186,7 +212,32 @@ class Build
 end
 
 if __FILE__ == $0
-	b = Build.new(ARGV.include?("-v"))
+	pg = ProjectGroup.new
+	pg.add_project Project.new("Build","build","build","src","HEAD",false)
+	pg.add_project Project.new("Utilities","util","bootstrap","src","HEAD",false)
+	pg.add_project Project.new("Utilities","util","server","src","HEAD",false)
+	pg.add_project Project.new("Utilities","util","util","src","HEAD",false)
+	pg.add_project Project.new("Utilities","util","contract","src","HEAD",false)
+	pg.add_project Project.new("Core","core","javaiopatch","src","HEAD",false)
+	pg.add_project Project.new("Core","core","core","src","HEAD",false)
+	pg.add_project Project.new("Yellow Pages","yp","yp","src","HEAD",false)
+	pg.add_project Project.new("Web Server","webserver","webserver","src","HEAD",false)
+	pg.add_project Project.new("Web Tomcat","webserver","webtomcat","src","HEAD",false)
+	pg.add_project Project.new("MTS","mts","mtsstd","src","HEAD",false)
+	pg.add_project Project.new("Qos","qos","qos","src","HEAD",false)
+	pg.add_project Project.new("Quo","qos","quo","src","HEAD",false)
+	pg.add_project Project.new("Planning","planning","planning","src","HEAD",true)
+	pg.add_project Project.new("Aggregation Agent","aggagent","aggagent","src","HEAD",false) # depends on Planning defs
+	pg.add_project Project.new("Community","community","community","src","HEAD", false) # depends on Planning defs
+	pg.add_project Project.new("General Logistics Module","glm","toolkit","src","HEAD", false)
+	pg.add_project Project.new("General Logistics Module","glm","glm","src","HEAD",true) # depends on Planning defs
+	pg.add_project Project.new("CSMART","csmart","csmart","src","HEAD",false) # depends on Planning defs
+	pg.add_project Project.new("Vishnu Client","vishnu","vishnuClient","src","HEAD", false)
+	pg.add_project Project.new("Service Discovery","servicediscovery","servicediscovery","src","HEAD",false) # depends on Planning, glm, jena (?)
+
+	pg.delete_all_but_first if ARGV.include?("-one")
+
+	b = Build.new(ARGV.include?("-v"), pg)
 
 	if ARGV.include?("-jars")
 		b.get_third_party_jars
@@ -198,28 +249,6 @@ if __FILE__ == $0
 		b.copy_up
 		exit
 	end
-
-	b.add_project Project.new("Build","build","build","src","HEAD",false)
-	b.add_project Project.new("Utilities","util","bootstrap","src","HEAD",false)
-	b.add_project Project.new("Utilities","util","server","src","HEAD",false)
-	b.add_project Project.new("Utilities","util","util","src","HEAD",false)
-	b.add_project Project.new("Utilities","util","contract","src","HEAD",false)
-	b.add_project Project.new("Core","core","javaiopatch","src","HEAD",false)
-	b.add_project Project.new("Core","core","core","src","HEAD",false)
-	b.add_project Project.new("Yellow Pages","yp","yp","src","HEAD",false)
-	b.add_project Project.new("Web Server","webserver","webserver","src","HEAD",false)
-	b.add_project Project.new("Web Tomcat","webserver","webtomcat","src","HEAD",false)
-	b.add_project Project.new("MTS","mts","mtsstd","src","HEAD",false)
-	b.add_project Project.new("Qos","qos","qos","src","HEAD",false)
-	b.add_project Project.new("Quo","qos","quo","src","HEAD",false)
-	b.add_project Project.new("Planning","planning","planning","src","HEAD",true)
-	b.add_project Project.new("Aggregation Agent","aggagent","aggagent","src","HEAD",false) # depends on Planning defs
-	b.add_project Project.new("Community","community","community","src","HEAD", false) # depends on Planning defs
-	b.add_project Project.new("General Logistics Module","glm","toolkit","src","HEAD", false)
-	b.add_project Project.new("General Logistics Module","glm","glm","src","HEAD",true) # depends on Planning defs
-	b.add_project Project.new("CSMART","csmart","csmart","src","HEAD",false) # depends on Planning defs
-	b.add_project Project.new("Vishnu Client","vishnu","vishnuClient","src","HEAD", false)
-	b.add_project Project.new("Service Discovery","servicediscovery","servicediscovery","src","HEAD",false) # depends on Planning, glm, jena (?)
 
 	b.build if ARGV.include?("-b") 
 	File.open("index.html", "w") {|file| file.syswrite(b.render)}  if ARGV.include?("-r")
