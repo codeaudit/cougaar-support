@@ -1,7 +1,5 @@
 ./project fiddle joe
 
-Add the anonymous user to fiddle
-
 Edit /usr/local/etc/httpd/httpd.conf, add vhost
 Edit /usr/local/etc/httpd/cvsweb.conf, add cvsroot
 /usr/local/sbin/apachectl restart
@@ -10,8 +8,5 @@ ssh -2 alp-5, edit /var/named/db.cougaar.org, add hostname, change serial
 number, restart
 
 Approve it
-
-Add project to home page
-vi /var/www/gforge-3.0/www/index_std.php
 
 Send email to project admin, saying "pls read new project admin doc"
