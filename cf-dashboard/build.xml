@@ -1,0 +1,135 @@
+<project name="generic" default="delete" basedir=".">
+
+<property name="sourceDirs" value="${core.src}"/>
+<property name="workDir" value="${core.working}"/>
+<property name="buildDir" value="${workDir}/build/"/>
+<property name="docDir" value="${core.docDir}"/>
+<property environment="env"/>
+
+	<target name="timestamp">
+		<tstamp>
+			<format property="currentTime" pattern="MM/dd/yyyy hh:mm:ss"/>
+		</tstamp>
+		<echo message="Starting build at ${currentTime}"/>
+    <echo message="Using ${java.vm.vendor} ${java.vm.name} ${java.vm.version} on ${os.name}"/>
+		<echo message="Checking out code from the Cougaar branch ${core.cvsTag}"/>
+	</target>
+               
+	<target name="delete">
+      <delete dir="${workDir}"/>
+			<mkdir dir="${core.reports}"/>
+  </target>
+
+    <target name="checkout">
+			<cvs command=" -Q co "
+				cvsRoot="${core.cvsdir}/${core.repository}"
+				package="${core.module}"
+				tag="${core.cvsTag}"
+				dest="${workDir}"/>
+    </target>
+
+    <target name="compile">
+        <javac  deprecation="true" 
+                debug="true" 
+                optimize="false" 
+                srcdir="${sourceDirs}"
+                destdir="${buildDir}">
+        </javac>
+				<antcall target="nightly"/>
+	</target>
+
+	<target name="nightly" unless="core.noNightly">
+				<echo message="Building against B10_4"/>
+				<mkdir dir="${workDir}/foo"/>
+        <javac  debug="false" 
+                failonerror="false" 
+                optimize="false" 
+                srcdir="${sourceDirs}" 
+								excludes="**/*JabberLogger.java" 
+                destdir="${workDir}/foo">
+                <classpath refid="B10_4.cougaar.libs"/>
+        </javac>
+				<delete dir="${workDir}/foo"/>
+	</target>
+
+	<target name="jar" depends="compile">
+		<jar jarfile="${core.jarFile}" baseDir="${buildDir}"/>
+		<signjar jar="${core.jarFile}" keystore="/var/build/signingCA_keystore" alias="privileged" storepass="keystore"/>
+	</target>
+
+	<target name="test" if="core.hasTests">
+		<junit printsummary="yes" haltonfailure="no">
+			<classpath>
+				<pathelement location="${buildDir}"/>
+				<pathelement path="${env.CLASSPATH}"/>
+        <path refid="cougaar.libs"/>
+				<!--
+				<fileset dir="${workDir}\${core.module}\">
+					<include name="**/*.jar" />
+				</fileset>
+				-->
+			</classpath>
+			<formatter type="xml" />
+			<batchtest fork="no" todir="${buildDir}">
+				<fileset dir="${core.test.src}">
+					<include name="**/*Test.java"/>
+					<include name="**/Test*.java"/>
+					<exclude name="**/*TestSuite.java"/>
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
+	<target name="defrunner" if="core.usesDefRunner">
+		<execon executable="java" parallel="false" failonerror="false">
+			<arg line="-classpath ${core.cougaar}/clib/build.jar org.cougaar.tools.build.DefRunner" />
+			<fileset dir="${sourceDirs}" >
+				<include name="**/*.def" />
+			</fileset>
+		</execon>
+	</target>
+
+	<target name="pmd" if="core.usesPMD">
+		<delete file="${core.pmd.reportFile}"/>
+		<taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask"/>
+			<pmd rulesetfiles="${core.pmd.rulesettype}" shortFilenames="true">
+				<formatter toFile="${core.pmd.reportFile}" type="html"/>
+				<fileset dir="${sourceDirs}">
+					<include name="**/*.java"/>
+					<exclude name="**/edu/jhuapl/**/*.java"/>
+					<exclude name="**/cougaar/core/security/crypto/ldap/admin/**/*.java"/>
+					<exclude name="**/org/cougaar/core/security/test/**/*.java"/>
+					<exclude name="**/com/lmco/ms/ultralog/TaskBrowser.java"/>
+				</fileset>
+			</pmd>
+	</target>
+
+	<target name="cpd" if="core.usesCPD">
+			<delete file="${core.cpd.reportFile}"/>
+	   <taskdef name="cpd" classname="net.sourceforge.pmd.cpd.CPDTask" />
+	   <cpd minimumTokenCount="100" outputFile="${core.cpd.reportFile}">
+				<fileset dir="${sourceDirs}">
+					<include name="**/*.java"/>
+					<exclude name="**/edu/jhuapl/**/*.java"/>
+					<exclude name="**/cougaar/core/security/crypto/ldap/admin/**/*.java"/>
+					<exclude name="**/org/cougaar/core/security/test/**/*.java"/>
+					<exclude name="**/com/lmco/ms/ultralog/TaskBrowser.java"/>
+				</fileset>
+			</cpd>
+	</target>
+	
+	<target name="doc" if="core.usesJavaDoc">
+		<javadoc sourcepath="${sourceDirs}" classpathref="cougaar.libs" destdir="${docDir}" windowtitle="Javadoc" packagenames="com.*,org.*,edu.*,acme.*,tv.*,safe.*,jabberlib.*,cougaarinstaller.*"/>
+	</target>
+	
+	<target name="srczip" if="core.usesSrcZip">
+		<delete file="${core.srcZip}"/>
+		<zip destfile="${core.srcZip}" basedir="${core.srcDirForZipFile}" includes="**/*.java"/>
+	</target>
+
+	<target name="clean" depends="timestamp,delete,checkout,defrunner,jspc,antlr,jar,pmd,cpd,srczip,doc,test"/>
+    
+</project>
+
+
+
