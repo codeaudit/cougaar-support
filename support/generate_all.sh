@@ -8,6 +8,7 @@ cat /usr/local/var/httpd/log/*access_log > /usr/local/var/httpd/log/all_access_l
 sort -t ' ' -k 4.9,4.12n -k 4.5,4.7M -k 4.2,4.3n -k 4.14,4.15n -k 4.17,4.18n -k 4.20,4.21n /usr/local/var/httpd/log/all_access_log_unsorted > /usr/local/var/httpd/log/all_access_log
 /usr/bin/webalizer -c /etc/webalizer/cougaarforge-all-webalizer.conf
 rm /usr/local/var/httpd/log/all_access_log
+rm /usr/local/var/httpd/log/all_access_log_unsorted
 
 for project in `ls /var/www/gforge-3.0/ | grep -v prototype | grep -v www | grep -v common`
 do
