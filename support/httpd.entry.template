@@ -1,8 +1,8 @@
 <VirtualHost *>
  ServerName projectname.cougaar.org
  DocumentRoot /var/www/gforge-projects/projectname
- CustomLog /usr/local/var/httpd/log/projectname-access_log common
- ErrorLog /usr/local/var/httpd/log/projectname-error_log
+ CustomLog /var/log/httpd/projectname-access_log common
+ ErrorLog /var/log/httpd/projectname-error_log
 </VirtualHost>
 
 #PLACEHOLDER#

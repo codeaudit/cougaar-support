@@ -25,10 +25,10 @@ Tom
 class Project
   CVSROOT="/cvsroot/"
   VIEWCVS_CONF="/usr/local/viewcvs/viewcvs.conf"
-  HTTPD_CONF="/usr/local/etc/httpd/httpd.conf"
-  HTTPD_LOG_DIR="/usr/local/var/httpd/log/"
+  HTTPD_CONF="/usr/local/apache/conf/httpd.conf"
+  APACHECTL="/usr/local/apache/bin/apachectl"
+  HTTPD_LOG_DIR="/var/log/httpd/"
   REPLACE_PROJECT="csmart"
-  APACHECTL="/usr/local/sbin/apachectl"
 	attr_reader :name
 	def initialize(name)
 		@name = name
