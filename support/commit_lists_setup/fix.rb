@@ -34,10 +34,23 @@ def wikis
 	}
 end
 
+def groupwrite
+	Dir.glob("/var/www/gforge-projects/*").each {|d|
+		cmd = "chmod -R g+w #{d}"
+		puts cmd
+		`#{cmd}`
+	}
+end
+
 if ARGV[0] == "wikis"
-	puts "foo"
+	puts "Fixing wikis"
+	wikis
 elsif ARGV[0] == "gids"
-	puts "gids"
+	puts "Fixing gids"
+	gids
+elsif ARGV[0] == "groupwrite"
+	puts "Setting project dirs to g+w"
+	groupwrite
 else 
 	puts "Usage: fix.rb <wikis|gids>"
 end
