@@ -31,6 +31,7 @@ touch /cvsroot/$1/CVSROOT/history
 cp 	/cvsroot/prototype/CVSROOT/loginfo* \
 	/cvsroot/prototype/CVSROOT/readers* \
 	/cvsroot/prototype/CVSROOT/passwd* \
+	/cvsroot/prototype/CVSROOT/config* \
 	/cvsroot/prototype/CVSROOT/cvswrappers* \
 	/cvsroot/prototype/CVSROOT/writers* \
 	/cvsroot/$1/CVSROOT/
