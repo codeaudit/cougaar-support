@@ -72,7 +72,7 @@
 	</target>
 
 	<target name="cpd">
-			<delete file="${core.cpd.report}"/>
+		<delete file="${core.cpd.report}"/>
 	   <taskdef name="cpd" classname="net.sourceforge.pmd.cpd.CPDTask" />
 	   <cpd minimumTokenCount="100" outputFile="${core.cpd.report}">
 				<fileset dir="${core.workdir}/${core.module}/${core.srcdir}">

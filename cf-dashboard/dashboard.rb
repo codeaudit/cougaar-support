@@ -21,7 +21,7 @@ class Project
     preamble + "_ncss.txt"
   end
   def pmd_output
-    preamble + "_pmd.txt"
+    preamble + "_pmd.html"
   end
   def cpd_output
     preamble + "_cpd.txt"
@@ -132,8 +132,8 @@ class Build
     if !File.exists?(PMD + f) or File.size(PMD + f) < 12
       return
     end
-    File.new(PMD + f).each("<td ") {|x| count += 1}
-    br.pmd=(count/4) unless count==0
+    File.new(PMD + f).each("<td ") {|x| br.pmd += 1}
+    br.pmd=(br.pmd/4) unless br.pmd==0
 	end
   def parse_ant_build_output(filename, result)
     build_xml=REXML::Document.new File.new(filename)
@@ -166,6 +166,7 @@ if __FILE__ == $0
 	ENV["CLASSPATH"] += ":/usr/local/pmd-1.3/lib/saxpath-1.0-fcs.jar:"
 	b = Build.new
 	b.add_project Project.new("core","javaiopatch","src","B10_4")
+	b.add_project Project.new("util","bootstrap","src","B10_4")
 	b.build if ARGV.include?("-b") 
 	puts b.render if ARGV.include?("-r") 
 	b.copy_up if ARGV.include?("-copy") 
