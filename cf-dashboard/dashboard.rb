@@ -198,6 +198,7 @@ if __FILE__ == $0
 		exit
 	end
 
+	b.add_project Project.new("Yellow Pages","yp","yp","src","B10_4")
 	b.build if ARGV.include?("-b") 
 
 	b.add_project Project.new("Utilities","util","bootstrap","src","B10_4")
@@ -206,10 +207,11 @@ if __FILE__ == $0
 	b.add_project Project.new("Utilities","util","contract","src","B10_4")
 	b.add_project Project.new("Core","core","javaiopatch","src","B10_4")
 	b.add_project Project.new("Core","core","core","src","B10_4")
-	
-	# GLM - having problems building these
+
+	# Having problems building these, need to run defrunner?
 	# b.add_project Project.new("General Logistics Module","glm","toolkit","src","B10_4")
 	# b.add_project Project.new("General Logistics Module","glm","glm","src","B10_4")
+	# b.add_project Project.new("Planning","planning","planning","src","B10_4")
 
 	if ARGV.include?("-r") 
 		File.open("index.html", "w") {|file| file.syswrite(b.render)}
