@@ -1,0 +1,15 @@
+#!/usr/local/bin/gnuplot
+
+set terminal png color
+set title 'Slashdotting of CougaarForge, Nov 5 2003'
+set nokey
+set xlabel "Time"
+set ylabel "Hits"
+set xdata time
+set format x "%m/%d %H%M"
+set timefmt "%m/%d/%y"
+set xrange ["11/4/03":"11/6/03"]
+set yrange [0:20000]
+set output 'hits.png'
+set timefmt "%m/%d/%y/%H:%M"
+plot "cfhits.txt" using 1:2 w linespoints
