@@ -1,11 +1,9 @@
-Adding a new group user with the user joe
-
 Add the group:
 /usr/sbin/groupadd fiddle
 
 Add the anonymous user to fiddle
 
-Add an initial user to fiddle: ??
+Add an initial user to fiddle: joe
 
 Add any other users to fiddle by editing /etc/group
 

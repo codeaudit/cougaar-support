@@ -2,7 +2,10 @@ Change license wget in clickthru to point to new address
 Update Webalizer stuff
 Update all DNS
 Change host name
+Edit /etc/gforge/local.inc, change all to cougaar.org
 Edit /etc/mail/local-host-names
+Edit httpd.conf
 Update the new_project_admin checklist
-Are there any hardcoded host names in the /var/www/gforge-projects/
+Are there any hardcoded host names in the files in /var/www/gforge-projects/
 directories?
+
