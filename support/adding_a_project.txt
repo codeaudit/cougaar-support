@@ -1,18 +1,24 @@
+Adding a new group user with the user joe
 
 Add the group:
 /usr/sbin/groupadd fiddle
 
-Add the anonymous user to the group
+Add the anonymous user to fiddle
 
-Add an initial user to the group: ??
+Add an initial user to fiddle: ??
 
-Add any other users to the group by editing /etc/group
+Add any other users to fiddle by editing /etc/group
+
+cd /home/gforge/cronjobs/cvs-cron/
 
 Create docroot
+./mkdocroot fiddle joe
 
 Create cvsroot
+./cvscreate fiddle joe
 
 Edit /usr/local/etc/httpd/httpd.conf, add vhost
+Edit /usr/local/etc/httpd/cvsweb.conf, add cvsroot
 ssh -2 alp-5, edit /var/named/db.cougaar.org, add hostname, change serial
 number, restart
 

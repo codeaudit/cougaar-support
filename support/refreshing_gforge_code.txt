@@ -30,6 +30,10 @@ cp -r /tmp/gforge_bkp/www/docs/site/ www/docs/site
 cp -R /tmp/gforgebkp/www/themes/cougaarforge www/themes/
 cp -R /tmp/gforgebkp/www/themes/savannah www/themes/
 
+Change in www/download.php Header("Content-type: application/octet-stream");
+
+Run any new SQL updates
+
 Make changes to Base.tab - "Login with SSL" -> Login
 
 
