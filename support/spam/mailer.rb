@@ -6,7 +6,7 @@ File.open("names.txt").each_line {|line|
 }
 
 #toaddr = "tom@infoether.com"
-toaddr = "opencougaar04@cougaar.org"
+toaddr = "noreply@cougaar.org"
 names.each {|n|
 	begin
 		cmd = "mail #{toaddr} -s \"CFP: OpenCougaar Conference (colocated with AAMAS 2004)\" -b #{n} < message.txt"
