@@ -1,2 +1,12 @@
-remove virtual host
+Removing the group "fiddle"
+
+remove fiddle host entry on alp-5:/var/named/db.cougaar.org, update serial
+number, restart named
+
+rm -rf  /var/www/gforge-projects/fiddle
+
+rm -rf /cvsroot/fiddle
+
+/usr/sbin/groupdel fiddle
+
 

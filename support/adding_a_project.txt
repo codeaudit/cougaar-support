@@ -22,6 +22,4 @@ Edit /usr/local/etc/httpd/cvsweb.conf, add cvsroot
 ssh -2 alp-5, edit /var/named/db.cougaar.org, add hostname, change serial
 number, restart
 
-
-
-
+Send email to project admin, saying "pls read new project admin doc"
