@@ -1,6 +1,5 @@
 <project name="generic" default="compile" basedir=".">
 
-<property name="sourceDirs" value="${core.src}"/>
 <property name="buildDir" value="${core.workdir}/build/"/>
 <property name="docDir" value="${core.docDir}"/>
 <property environment="env"/>
@@ -15,10 +14,6 @@
 	</target>
                
     <target name="checkout">
-			<echo message="here ${core.repository}"/>
-			<echo message="here ${core.module}"/>
-			<echo message="here ${core.cvsTag}"/>
-			<echo message="here ${core.workdir}"/>
 			<cvs command=" -Q co "
 				cvsRoot="${core.cvsroot}${core.repository}"
 				package="${core.module}"
@@ -27,13 +22,15 @@
     </target>
 
     <target name="compile">
-        <javac  deprecation="true" 
-                debug="true" 
-                optimize="false" 
-                srcdir="${sourceDirs}"
-                destdir="${buildDir}">
-        </javac>
-				<antcall target="nightly"/>
+        <javac 
+					deprecation="true" 
+					debug="true" 
+					optimize="false" 
+					target="1.4" 
+					source="1.4" 
+					compiler="javac1.4" 
+					srcdir="${core.workdir}/${core.module}/${core.srcdir}" 
+					destdir="${buildDir}"/>
 	</target>
 
 	<target name="test" if="core.hasTests">
@@ -57,7 +54,7 @@
 	<target name="defrunner" if="core.usesDefRunner">
 		<execon executable="java" parallel="false" failonerror="false">
 			<arg line="-classpath ${core.cougaar}/clib/build.jar org.cougaar.tools.build.DefRunner" />
-			<fileset dir="${sourceDirs}" >
+			<fileset dir="${core.srcdir}" >
 				<include name="**/*.def" />
 			</fileset>
 		</execon>
@@ -68,7 +65,7 @@
 		<taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask"/>
 			<pmd rulesetfiles="${core.pmd.rulesettype}" shortFilenames="true">
 				<formatter toFile="${core.pmd.reportFile}" type="html"/>
-				<fileset dir="${sourceDirs}">
+				<fileset dir="${core.srcdir}">
 					<include name="**/*.java"/>
 					<exclude name="**/edu/jhuapl/**/*.java"/>
 					<exclude name="**/cougaar/core/security/crypto/ldap/admin/**/*.java"/>
@@ -82,7 +79,7 @@
 			<delete file="${core.cpd.reportFile}"/>
 	   <taskdef name="cpd" classname="net.sourceforge.pmd.cpd.CPDTask" />
 	   <cpd minimumTokenCount="100" outputFile="${core.cpd.reportFile}">
-				<fileset dir="${sourceDirs}">
+				<fileset dir="${core.srcdir}">
 					<include name="**/*.java"/>
 					<exclude name="**/edu/jhuapl/**/*.java"/>
 					<exclude name="**/cougaar/core/security/crypto/ldap/admin/**/*.java"/>
@@ -93,7 +90,7 @@
 	</target>
 	
 	<target name="doc" if="core.usesJavaDoc">
-		<javadoc sourcepath="${sourceDirs}" classpathref="cougaar.libs" destdir="${docDir}" windowtitle="Javadoc" packagenames="com.*,org.*,edu.*,acme.*,tv.*,safe.*,jabberlib.*,cougaarinstaller.*"/>
+		<javadoc sourcepath="${core.srcdir}" classpathref="cougaar.libs" destdir="${docDir}" windowtitle="Javadoc" packagenames="com.*,org.*,edu.*,acme.*,tv.*,safe.*,jabberlib.*,cougaarinstaller.*"/>
 	</target>
 	
 </project>
