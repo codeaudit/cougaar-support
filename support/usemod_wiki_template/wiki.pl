@@ -229,7 +229,7 @@ sub InitLinkPatterns {
   #   5.  A $FS (field separator) character    (kept in output)
   #   6.  A double double-quote ("")           (removed from output)
 
-  $UrlProtocols = "http|https|ftp|afs|news|nntp|mid|cid|mailto|wais|"
+  $UrlProtocols = "HTTP|HTTPS|http|https|ftp|afs|news|nntp|mid|cid|mailto|wais|"
                   . "prospero|telnet|gopher";
   $UrlProtocols .= '|file'  if $NetworkFile;
   $UrlPattern = "((?:(?:$UrlProtocols):[^\\]\\s\"<>$FS]+)$QDelim)";
@@ -1475,6 +1475,7 @@ sub UrlLink {
   my ($rawname, $useImage) = @_;
   my ($name, $punct);
 
+  $rawname =~ s/^(HTTPS?:\/\/)/lc($1)/e;
   ($name, $punct) = &SplitUrlPunct($rawname);
   if ($NetworkFile && $name =~ m|^file:|) {
     # Only do remote file:// links. No file:///c|/windows.
@@ -2580,6 +2581,15 @@ sub DoOtherRequest {
   &ReportError(T('Invalid URL.'));
 }
 
+sub IllegalLinks {
+    my ($text) = @_;
+    if ($text =~ /https?:\/\//) {
+       return 1;
+    }
+    return 0;
+}
+
+
 sub DoEdit {
   my ($id, $isConflict, $oldTime, $newText, $preview) = @_;
   my ($header, $editRows, $editCols, $userName, $revision, $oldText);
@@ -3278,6 +3288,12 @@ sub DoPost {
   if (!&UserCanEdit($id, 1)) {
     # This is an internal interface--we don't need to explain
     &ReportError(Ts('Editing not allowed for %s.', $id));
+    return;
+  }
+  if (IllegalLinks($string)) {
+    &ReportError(T('Edit Cancelled -- Illegal External Links'));
+    print "<p>";
+    print T('See <a href="' . $ScriptName . '?ExternalLinks">External Links</a> for details.');
     return;
   }
 

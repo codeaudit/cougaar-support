@@ -1,0 +1,47 @@
+--- wowwiki.pl-old	2004-09-16 02:15:19.000000000 +0000
++++ wowwiki.pl	2004-09-16 03:31:02.000000000 +0000
+@@ -313,7 +313,7 @@
+   #   4.  A single double-quote (")            (kept in output)
+   #   5.  A $FS (field separator) character    (kept in output)
+   #   6.  A double double-quote ("")           (removed from output)
+-  $UrlProtocols = "http|https|ftp|afs|news|nntp|mid|cid|mailto|wais|"
++  $UrlProtocols = "HTTP|HTTPS|ftp|afs|news|nntp|mid|cid|mailto|wais|"
+                   . "prospero|telnet|gopher";
+   $UrlProtocols .= '|file'  if ($NetworkFile || !$LimitFileUrl);
+   $UrlPattern = "((?:(?:$UrlProtocols):[^\\]\\s\"<>$FS]+)$QDelim)";
+@@ -1914,6 +1914,7 @@
+   my ($rawname, $useImage) = @_;
+   my ($name, $punct);
+ 
++  $rawname =~ s/^(HTTPS?:\/\/)/lc($1)/e;
+   ($name, $punct) = &SplitUrlPunct($rawname);
+   if ($LimitFileUrl && ($NetworkFile && $name =~ m|^file:|)) {
+     # Only do remote file:// links. No file:///c|/windows.
+@@ -2659,6 +2660,14 @@
+   return 1;
+ }
+ 
++sub IllegalLinks {
++    my ($text) = @_;
++    if ($text =~ /https?:\/\//) {
++	return 1;
++    }
++    return 0;
++}
++
+ sub UserCanEdit {
+   my ($id, $deepCheck) = @_;
+ 
+@@ -3901,6 +3910,12 @@
+     &ReportError(Ts('Editing not allowed for %s.', $id));
+     return;
+   }
++  if (IllegalLinks($string)) {
++    &ReportError(T('Edit Cancelled -- Illegal External Links'));
++    print "<p>";
++    print T('See <a href="' . $ScriptName . '?ExternalLinks">External Links</a> for details.');
++    return;
++  }
+   if (($id eq   'SampleUndefinedPage')    ||
+       ($id eq T('SampleUndefinedPage'))   ||
+       ($id eq   'Sample_Undefined_Page')  ||
