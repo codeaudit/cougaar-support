@@ -3,7 +3,8 @@
 require "rubygems"
 require 'postgres-pr/connection'
 
-newlists = "core,mts,webserver,glm,csmart,aggagent,community,util,vishnu,yp,build,qos,planning,servicediscovery,tutorials".split(",").collect!{|x| x + "-commits" }
+# newlists = "core,mts,webserver,glm,csmart,aggagent,community,util,vishnu,yp,build,qos,planning,servicediscovery,tutorials".split(",").collect!{|x| x + "-commits" }
+newlists = ["cws-commits"]
 
 conn = PostgresPR::Connection.new("gforge", "gforge")
 newlists.each {|list|
