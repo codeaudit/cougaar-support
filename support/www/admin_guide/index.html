@@ -1,0 +1,203 @@
+<html>
+<head>
+<title>
+CougaarForge Admin Guide
+</title>
+</head>
+
+<body>
+<center>
+<h2>CougaarForge Admin Notes</h2>
+</center>
+
+<hr>
+
+<center><h3>Contents</h3></center>
+<a href="#db">Doing a DB upgrade</a>
+<br/><a href="#cust">Customizations</a>
+<br/><a href="#cron">Cron jobs</a>
+<br/><a href="#list">Mailing list creation</a>
+<br/><a href="#changelog">Changelog</a>
+
+<hr>
+<a name="db"/>
+<h4>Doing a DB upgrade</h4>
+<p>
+Some notes on a major version upgrade of PostgreSQL (v7.3 to v7.4.5) are in the document "<a href="http://cougaar.org/cgi-bin/viewcvs.cgi/support/?cvsroot=support">upgrading_postgresql.txt</a>".
+
+<hr>
+
+
+<a name="cust"/>
+<h4>Customizations</h4>
+<p>
+Details of the CougaarForge customizations to the standard stock GForge installation are in the document "<a href="http://cougaar.org/cgi-bin/viewcvs.cgi/support/?cvsroot=support">customization.txt</a>".
+
+<hr>
+
+<a name="cron"/>
+<h4>Cronjobs</h4>
+<p>
+GForge requires a bunch of cronjobs to run correctly.   They are currently in the root user's cron tab:
+<table width='75%'>
+<tr>
+<th>Purpose</th>
+<th>Crontab entry</th>
+</tr>
+<tr>
+<td>
+# Run Webalizer stats
+</td>
+<td>
+50 23 * * * ~/webalizer/generate_all.sh
+</td>
+</tr>
+
+<tr><td>
+# MySQL database nightly dumps
+</td><td>
+00 01 * * * cd /root/mysql/ ; ./mysql_bkp.pl
+</td></tr>
+
+<tr><td>
+# PostgreSQL database nightly dumps
+</td><td>
+10 01 * * * cd /root/pgsql/ ; ./pgsql_bkp.rb
+</td></tr>
+
+<tr><td>
+# Bugzilla whiner
+</td><td>
+00 00 * * 6 cd /var/www/bugzilla/ ; ./whineatnews.pl
+</td></tr>
+
+<tr><td>
+# Update errata web page
+</td><td>
+0 0 * * * ~/update_errata.rb
+</td></tr>
+
+<tr><td>
+# Check for pending mass mailings
+</td><td>
+0,10,20,30,40,50 * * * * ~/gforge/massmail.php
+</td></tr>
+
+<tr><td>
+# Sync Unix accts with GForge accts
+</td><td>
+00 * * * * ~/gforge/update_unix_accounts.php > /dev/null
+</td></tr>
+
+<tr><td>
+# Check for new mailing lists
+</td><td>
+00 * * * * ~/gforge/mailing_list_check.php
+</td></tr>
+
+<tr><td>
+# recalculate user popularity metric
+</td><td>
+10 1 * * * ~/gforge/calculate_user_metric.php
+</td></tr>
+
+<tr><td>
+# Detailed CVS stats
+</td><td>
+10 1 * * * ~/gforge/history_parse.php
+</td></tr>
+
+<tr><td>
+#  daily project_weekly_metric recalc
+</td><td>
+12 1 * * * ~/gforge/project_weekly_metric.php
+</td></tr>
+
+<tr><td>
+#   daily deletion of sessions, closing jobs, etc
+</td><td>
+15 1 * * * ~/gforge/project_cleanup.php
+</td></tr>
+
+<tr><td>
+#  daily crunching of survey data and other associated ratings
+</td><td>
+41 1 * * * ~/gforge/rating_stats.php
+</td></tr>
+
+<tr><td>
+#  daily crunching of project summary data (counts)
+</td><td>
+45 1 * * * ~/gforge/db_project_sums.php
+</td></tr>
+
+<tr><td>
+#   daily recalculate of the sums under the trove map
+</td><td>
+50 1 * * * ~/gforge/db_trove_maint.php
+</td></tr>
+
+<tr><td>
+#       daily close pending artifacts
+</td><td>
+57 1 * * * ~/gforge/check_stale_tracker_items.php
+</td></tr>
+
+<tr><td>
+#       Stats aggregation work
+</td><td>
+15 07 * * * ~/gforge/db_stats_agg.php
+</td></tr>
+
+<tr><td>
+#       daily rotation of the activity_log
+</td><td>
+0 0 * * * ~/gforge/rotate_activity.php
+</td></tr>
+
+<tr><td>
+#       daily aggregating of the numbers
+</td><td>
+15 0 * * * ~/gforge/site_stats.php
+</td></tr>
+
+<tr><td>
+#       Internal database maintenance (defrag, query plans, etc)
+</td><td>
+0 2 * * * ~/gforge/vacuum.php
+</td></tr>
+
+</table>
+
+<hr>
+<a name="list"/>
+<h4>Mailing list creation</h4>
+<p>
+When a user enters a new mailing list into the GForge user interface, the new list is not immediately created.  Instead, the "mailing_list_check.php" script noted above runs every 10 minutes and, if it finds a new list creation request, emails the root user.  When the root user gets the email, he should:
+<ul>
+<li>SSH into CougaarForge
+<li>su to root
+<li>Run the cronjob manually, i.e, execute:
+<pre>
+[root@cougaar tom]# ~/gforge/mailing_list_check.php
+</pre>
+<li>Run the given command to create the mailing list
+<li>Edit the /etc/aliases file and add the new aliases for the list.  A good way to do this is to just copy/paste the entries from the previous mailing list and change the list names.
+<li>Run the /usr/bin/newaliases utility:
+<pre>
+[root@cougaar tom]# newaliases
+/etc/aliases: 467 aliases, longest 71 bytes, 32346 bytes total
+[root@cougaar tom]#
+</pre>
+This reads in the new list aliases and sends a SIGHUP to Sendmail. 
+</ul>
+
+<hr>
+<a name="changelog"/>
+<h4>Changelog</h4>
+<p>
+3/22/2005: Initial draft; mostly linking out to other documents.  We'll probably consolidate those into this one. [TLC]
+<br/>
+
+</body>
+</html>
