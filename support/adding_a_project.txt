@@ -1,9 +1,0 @@
-./project fiddle joe
-
-Edit /usr/local/etc/httpd/httpd.conf, add vhost
-Edit /usr/local/viewcvs/viewcvs.conf, add cvsroot
-/usr/local/sbin/apachectl restart
-
-Approve it
-
-Send email to project admin, saying "pls read new project admin doc"
