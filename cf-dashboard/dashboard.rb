@@ -185,6 +185,10 @@ class Build
 end
 
 if __FILE__ == $0
+	ENV['JAVA_HOME']="/usr/local/java"
+	ENV['ANT_HOME']="/usr/local/ant"
+	ENV['PATH']="#{ENV['PATH']}:#{ENV['JAVA_HOME']}/bin:#{ENV['ANT_HOME']}/bin"
+
 	b = Build.new(ARGV.include?("-v"))
 
 	if ARGV.include?("-jars")
@@ -197,7 +201,6 @@ if __FILE__ == $0
 		b.copy_up
 		exit
 	end
-
 
 	b.add_project Project.new("Utilities","util","bootstrap","src","B10_4")
 	b.add_project Project.new("Utilities","util","server","src","B10_4")
