@@ -214,7 +214,7 @@ if __FILE__ == $0
 	b.add_project Project.new("Web Tomcat","webserver","webtomcat","src","HEAD")
 	b.add_project Project.new("Qos","qos","qos","src","HEAD")
 	b.add_project Project.new("Quo","qos","quo","src","HEAD")
-	b.add_project Project.new("MTS","mts","std","src","HEAD")
+	b.add_project Project.new("MTS","mts","mtsstd","src","HEAD")
 
 	b.build if ARGV.include?("-b") 
 	if ARGV.include?("-r") 
