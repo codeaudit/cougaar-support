@@ -12,8 +12,19 @@
     <echo message="Using ${java.vm.vendor} ${java.vm.name} ${java.vm.version} on ${os.name}"/>
 		<echo message="Checking out code from the Cougaar branch ${core.cvsTag}"/>
 	</target>
+
+	  <path id="project.class.path">
+					<pathelement location="${buildDir}"/>
+					<fileset dir="/home/tom/cougaarforge/cf-dashboard/jars/lib/">
+						<include name="*.jar"/>
+					</fileset>
+					<fileset dir="/usr/local/pmd-1.9/lib/">
+						<include name="*.jar"/>
+					</fileset>
+		</path>
                
-    <target name="compile">
+	<target name="compile">
+				<mkdir dir="${buildDir}"/>
         <javac 
 					deprecation="true" 
 					debug="true" 
@@ -22,31 +33,15 @@
 					source="1.4" 
 					compiler="javac1.4" 
 					srcdir="${core.workdir}/${core.module}/${core.srcdir}" 
-					destdir="${buildDir}"/>
+					destdir="${buildDir}">
+					<classpath refid="project.class.path"/>
+			</javac>
 		    <copy todir="${buildDir}">
 		        <fileset dir="${core.workdir}/${core.module}/${core.srcdir}">
 		            <include name="**/*.def"/>
 		        </fileset>
 		    </copy>
 			</target>
-
-	<target name="test" if="core.hasTests">
-		<junit printsummary="yes" haltonfailure="no">
-			<classpath>
-				<pathelement location="${buildDir}"/>
-				<pathelement path="${env.CLASSPATH}"/>
-        <path refid="cougaar.libs"/>
-			</classpath>
-			<formatter type="xml" />
-			<batchtest fork="no" todir="${buildDir}">
-				<fileset dir="${core.test.src}">
-					<include name="**/*Test.java"/>
-					<include name="**/Test*.java"/>
-					<exclude name="**/*TestSuite.java"/>
-				</fileset>
-			</batchtest>
-		</junit>
-	</target>
 
 	<target name="defrunner">
 		<execon executable="java" parallel="false" failonerror="false">
