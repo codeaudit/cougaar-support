@@ -47,6 +47,8 @@ www/include/features_boxes.php
 www/scm/index.php
 - delete the beta viewers
 - hardcoded user_id == 102, blah. (?)
+www/scm/others-files-in-this-directory
+- chmod to 600 or remove
 common/search/SearchQuery.class
 - change seach length from 3 to 2
 - change line 96 to removed % from filtered characters hash
