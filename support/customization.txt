@@ -1,7 +1,6 @@
 mv /var/www/gforge-3.0/www /tmp/gforge_bkp/
 mv /var/www/gforge-3.0/common /tmp/gforge_bkp/
 
-
 cvs export -d tmp/ -D tomorrow gforge
 mv tmp gforge
 tar -zcf copyover.tar.gz gforge/
@@ -37,6 +36,7 @@ www/project/admin/index.php - tarballs link should be gone
 
 www/forum/include/ForumHTML.class - change to remove admin link from non-admin
 viewers - hardcoded user_id == 102, blah.
+www/include/project_info.php - Added usage link
 
 Change in www/download.php Header("Content-type: application/octet-stream");
 
