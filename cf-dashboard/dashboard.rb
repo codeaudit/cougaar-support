@@ -37,10 +37,18 @@ class Project
 end
 
 class BuildResult
-	attr_accessor :compile_succeeded, :deprecation_warnings, :built_at, :loc, :pmd, :cpd
+	attr_accessor :compile_succeeded, :deprecation_warnings, :built_at, :loc, :cpd
+	attr_reader :pmd
 	def initialize 
 		@pmd = 0
 		@cpd = 0
+	end
+	def parse_pmd_output(f)
+    if !File.exists?(Build::PMD + f) or File.size(Build::PMD + f) < 12
+      return
+    end
+    File.new(Build::PMD + f).each("<td ") {|x| @pmd += 1}
+    @pmd=(@pmd/4) unless @pmd==0
 	end
 end
 
@@ -75,7 +83,7 @@ class Build
 			br = BuildResult.new
 			parse_ant_build_output(prepend_working_dir(p.ant_xml_output),br)
 			br.loc = parse_element(REPORTS + "/" + p.ncss_output, "javancss/ncss")
-			parse_pmd_output(p.pmd_output, br)
+			br.parse_pmd_output(p.pmd_output)
       pmd="<a href=\"#{PMD}#{p.pmd_output}\">#{br.pmd.to_s}</a>" unless br.pmd == 0
 			parse_cpd_output(p.cpd_output, br)
       if br.cpd == 0
@@ -151,13 +159,6 @@ class Build
       end
     }
   end
-	def parse_pmd_output(f,br)
-    if !File.exists?(PMD + f) or File.size(PMD + f) < 12
-      return
-    end
-    File.new(PMD + f).each("<td ") {|x| br.pmd += 1}
-    br.pmd=(br.pmd/4) unless br.pmd==0
-	end
   def parse_ant_build_output(filename, result)
     build_xml=REXML::Document.new File.new(filename)
     result.compile_succeeded = build_xml.elements["build"].attributes["error"].nil?
@@ -197,6 +198,8 @@ if __FILE__ == $0
 		exit
 	end
 
+	b.build if ARGV.include?("-b") 
+
 	b.add_project Project.new("Utilities","util","bootstrap","src","B10_4")
 	b.add_project Project.new("Utilities","util","server","src","B10_4")
 	b.add_project Project.new("Utilities","util","util","src","B10_4")
@@ -204,8 +207,6 @@ if __FILE__ == $0
 	b.add_project Project.new("Core","core","javaiopatch","src","B10_4")
 	b.add_project Project.new("Core","core","core","src","B10_4")
 	
-	b.build if ARGV.include?("-b") 
-
 	# GLM - having problems building these
 	# b.add_project Project.new("General Logistics Module","glm","toolkit","src","B10_4")
 	# b.add_project Project.new("General Logistics Module","glm","glm","src","B10_4")
