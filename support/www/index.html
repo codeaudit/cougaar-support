@@ -10,6 +10,7 @@
 <ul>
 <li>The previous day (Nov 4) was actually a fairly busy day, since some links to CougaarForge had been posted to various agent sites.  
 <li>These hit counts don't includes hits on various subdomains within CougaarForge, since those go to separate log files.  So the totals are actually a bit higher than posted here.  These are pretty representative, though.
+<li>The dip at around 8:30 was when the Postgres database began running out of connections.  I raised <code>max_connections</code>, <code>shared_buffers</code>, and <code>sort_mem</code>, restarted the database, and all was well.  Sigh.  Learn something new every day.
 <li>Joe is going to provide the router traffic graphs for the day, too.
 </ul>
 </body>
