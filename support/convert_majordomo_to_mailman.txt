@@ -1,0 +1,4 @@
+Copy over the Majordomo archive file (foo.mbox)
+Run convert.sh to set permissions/ownership and add CR
+Run /usr/local/mailman/bin/arch foo
+Celebrate!
