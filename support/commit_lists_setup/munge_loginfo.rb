@@ -1,20 +1,12 @@
 #!/usr/local/bin/ruby
 
-adminmap = 
-{"/cvsroot/profiler/CVSROOT/loginfo"=>"twright@bbn.com",
-"/cvsroot/message-router/CVSROOT/loginfo"=>"dave@infoether.com",
-"/cvsroot/ccm/CVSROOT/loginfo"=>"mabrams@cougaarsoftware.com",
-"/cvsroot/acme/CVSROOT/loginfo"=>"wwright@bbn.com",
-"/cvsroot/cws/CVSROOT/loginfo"=>"twright@bbn.com",
-"/cvsroot/awb/CVSROOT/loginfo"=>"Dana.Moore@bbn.com",
-"/cvsroot/fwsupport/CVSROOT/loginfo"=>"srosset@cougaarsoftware.com",
-"/cvsroot/probemeister/CVSROOT/loginfo"=>"pup@mn.rr.com",
-"/cvsroot/robustness/CVSROOT/loginfo"=>"mthome@bbn.com",
-"/cvsroot/securemonitor/CVSROOT/loginfo"=>"srosset@cougaarsoftware.com",
-"/cvsroot/securebootstrap/CVSROOT/loginfo"=>"srosset@cougaarsoftware.com",
-"/cvsroot/securitycore/CVSROOT/loginfo"=>"srosset@cougaarsoftware.com",
-"/cvsroot/certauthority/CVSROOT/loginfo"=>"srosset@cougaarsoftware.com",
-"/cvsroot/secureutil/CVSROOT/loginfo"=>"srosset@cougaarsoftware.com"
+adminmap = {
+"/cvsroot/micro/CVSROOT/loginfo"=>"wwright@bbn.com",
+"/cvsroot/prototype/CVSROOT/loginfo"=>"ahelsing@bbn.com",
+"/cvsroot/cougaarunit/CVSROOT/loginfo"=>"mabrams@cougaarsoftware.com",
+"/cvsroot/cougaarlegacy/CVSROOT/loginfo"=>"ahelsing@bbn.com",
+"/cvsroot/bol2/CVSROOT/loginfo"=>"mabrams@cougaarsoftware.com",
+"/cvsroot/cougaaride/CVSROOT/loginfo"=>"mabrams@cougaarsoftware.com"
 }
 
 projects = "core,mts,webserver,glm,csmart,aggagent,community,util,vishnu,yp,build,qos,planning,servicediscovery,tutorials,cws".split(",")
