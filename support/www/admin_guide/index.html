@@ -33,6 +33,8 @@ CougaarForge Admin Guide
 <p>
 Here are the details of upgrading to a newer version of GForge.  This includes a list of all our customizations to the standard GForge installation:
 
+<p>
+First get the version of GForge that we want to upgrade to:
 <pre>
 If upgrading from CVS:
 -cvs export -d tmp/ -D tomorrow gforge
@@ -40,7 +42,12 @@ If upgrading from CVS:
 -tar -zcf copyover.tar.gz gforge/
 -scp copyover.tar.gz gforge@cougaar.org:tmp/
 else just get tarball with wget
+</pre>
 
+<p>
+Now we'll make a backups of the old files and move the new ones in.  Recall that a PHP app is mostly just a collection of files that get parsed by the PHP interpreter:
+<pre>
+Stop web server - /usr/local/apache/bin/apachectl stop
 mv /var/www/gforge-3.0/www /tmp/gforge_bkp/
 Run new db/ scripts
 Move old www/ and common/ to upgrades dir
@@ -48,17 +55,33 @@ Copy new www/ and common/ in
 chown -R gforge:gforge www/ common/
 Copy www/.htaccess back in
 Copy usage/ and usage_all/ back in
-
 cp -R tmp/gforge_bkp/www/icons/ www/
 cp -R tmp/gforge_bkp/www/errata/ www/
-mkdir www/documents && cp /tmp/gforge_bkp/www/documents/license.html www/documents
+</pre>
 
+<p>
+This is a CougaarForge-specific file:
+<pre>
+mkdir www/documents && cp /tmp/gforge_bkp/www/documents/license.html www/documents
+</pre>
+
+<p>Copy in the CougaarForge custom theme:
+<pre>
 cp -R tmp/gforge_bkp/www/themes/cougaarforge www/themes/
 cp -R tmp/gforge_bkp/www/themes/savannah www/themes/
 cp tmp/gforge_bkp/www/index_std.php www/
-Copy in new local.inc properties
-Restart web server
+</pre>
 
+<p>
+If there are any new local.inc properties, copy them in.
+<p>
+Restart web server so that we can test the next series of commands - you'll be adding in all the CougaarForge customizations and you'll want to check them as you go to make sure they work:
+<pre>
+/usr/local/apache/bin/apachectl start
+</pre>
+
+<p>Now start applying customizations:
+<pre>
 Copy www/include/features_boxes stuff back in
 cp tmp/gforge_bkp/www/register/projectinfo.php www/register/
 cp tmp/gforge_bkp/www/robots.txt www/
@@ -325,7 +348,10 @@ When a user enters a new mailing list into the GForge user interface, the new li
 <pre>
 [root@cougaar tom]# ~/gforge/mailing_list_check.php
 </pre>
-<li>Run the given command to create the mailing list
+<li>Run the given command to create the mailing list.  It'll be something like:
+<pre>
+/usr/local/mailman/bin/newlist cougaardoom-users fred@bbn.com
+</pre>
 <li>Edit the /etc/aliases file and add the new aliases for the list.  A good way to do this is to just copy/paste the entries from the previous mailing list and change the list names.
 <li>Run the /usr/bin/newaliases utility:
 <pre>
