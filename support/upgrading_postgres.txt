@@ -35,21 +35,20 @@ Start up new DB engine
 - edit /etc/profile
 -- add "PGDATA=/var/pgsql/data" and export
 -- add /var/pgsql/bin/ to PATH
-- /usr/sbin/groupadd postgres
-- /usr/sbin/useradd -g postgres postgres
-- mkdir /var/pgsql/data && chown postgres:postgres /var/pgsql/data && chmod g+s
-/var/pgsql/data
-- touch /var/log/postgresql.log && chown postgres:postgres
-  /var/log/postgresql.log
-- initdb -D /var/pgsql/data
-- edit /var/pgsql/data/pg_hba.conf
--- remove IPv6 record
-- su -l postgres
-- run /var/pgsql/bin/mypg_start
-- createuser gforge -W
-- createdb -U gforge gforge
-- pg_restore -d gforge < /var/backups/pgsql/Fri.tar.gz 
--- took 5 minutes, 46 seconds
+/usr/sbin/groupadd postgres
+/usr/sbin/useradd -g postgres postgres
+mkdir /var/pgsql/data && chown postgres:postgres /var/pgsql/data && chmod g+s /var/pgsql/data
+touch /var/log/postgresql.log && chown postgres:postgres /var/log/postgresql.log
+su -l postgres
+/var/pgsql/bin/initdb -D /var/pgsql/data
+edit /var/pgsql/data/pg_hba.conf
+- remove IPv6 record
+su -l postgres
+run /var/pgsql/bin/mypg_start
+createuser gforge -W
+createdb -U gforge gforge
+pg_restore -d gforge < /var/backups/pgsql/Fri.tar.gz 
+- took 5 minutes, 46 seconds
 
 Started up webserver
 - edited httpd.conf, moved logs to /var/log/httpd/
