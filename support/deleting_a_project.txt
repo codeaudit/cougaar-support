@@ -6,6 +6,8 @@ number, restart named
 Edit /usr/local/etc/httpd/cvsweb.conf, delete fiddle from hash
 Edit /usr/local/etc/httpd/httpd.conf, delete fiddle vhost
 
+rm /etc/webalizer/fiddle-webalizer.conf
+
 rm -rf  /var/www/gforge-projects/fiddle
 
 rm -rf /cvsroot/fiddle
