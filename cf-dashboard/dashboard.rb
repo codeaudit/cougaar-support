@@ -94,7 +94,6 @@ class Build
 		`cvs -Q -d:pserver:anonymous@cougaar.org:/cvsroot/core export -D tomorrow jars/lib/`
 	end
 	def build
-		get_third_party_jars
 		@projects.each {|p|
 			cmd = "ant -listener org.apache.tools.ant.XmlLogger -DXmlLogger.file=#{REPORTS}#{p.ant_xml_output} -buildfile build.xml -logfile #{BUILD}#{p.ant_text_output} -Dcore.workdir=#{TMP} -Dcore.repository=#{p.repo} -Dcore.module=#{p.mod} -Dcore.cvsTag=#{p.tag} -Dcore.cvsroot=#{CVS_ROOT} -Dcore.srcdir=#{p.srcdir} -Dcore.pmd.report=#{PMD + p.pmd_output} -Dcore.cpd.report=#{CPD + p.cpd_output} timestamp checkout compile pmd cpd"
 			`#{cmd}`
@@ -115,6 +114,9 @@ class Build
 		`scp pmd/* #{WWW}/pmd/`
 		`scp cpd/* #{WWW}/cpd/`
 		`scp build/* #{WWW}/build/`
+	end
+	def clean_classes
+		`rm -rf #{TMP}#{BUILD}`
 	end
   def parse_cpd_output(f, result)
     if !File.exists?(CPD + f) or File.size(CPD + f) < 10
@@ -170,19 +172,26 @@ if __FILE__ == $0
 		exit
 	end
 
+	if ARGV.include?("-cleanclasses")
+		b.clean_classes
+		exit
+	end
+
 	ENV["CLASSPATH"] = "/usr/local/pmd-1.3/lib/pmd-1.3.jar:"
 	ENV["CLASSPATH"] += ":/usr/local/pmd-1.3/lib/jaxen-core-1.0-fcs.jar:"
 	ENV["CLASSPATH"] += ":/usr/local/pmd-1.3/lib/saxpath-1.0-fcs.jar:"
+	ENV["CLASSPATH"] += ":/home/tom/data/cf-dashboard/#{Build::TMP}#{Build::BUILD}:"
+	Dir.new("jars/lib/").entries.select {|x| (x == "." or x == "..") ? nil : x}.compact.each {|jar| 
+		ENV["CLASSPATH"] += ":/home/tom/data/cf-dashboard/jars/lib/" + jar + ":"
+	}
 	
-
-
-	b.add_project Project.new("util","contract","src","B10_4")
-
-	b.build if ARGV.include?("-b") 
-
 	b.add_project Project.new("core","javaiopatch","src","B10_4")
 	b.add_project Project.new("util","bootstrap","src","B10_4")
 	b.add_project Project.new("util","server","src","B10_4")
+	b.add_project Project.new("util","util","src","B10_4")
+	b.add_project Project.new("util","contract","src","B10_4")
+
+	b.build if ARGV.include?("-b") 
 
 	if ARGV.include?("-r") 
 		File.open("index.html", "w") {|file| file.syswrite(b.render)}

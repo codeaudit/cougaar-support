@@ -14,7 +14,7 @@
 <h3>If the board is green, the code is clean</h3>
 <table>
 <tr>
-<th>Repository</th>
+<th>Project</th>
 <th>Module</th>
 <th>Branch</th>
 <th>Built<br>at</th>
