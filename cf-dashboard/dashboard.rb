@@ -103,7 +103,7 @@ class Build
 																"cpd"=>cpd 
 																}]	
 		}
-		output << fm["footer.frag"]
+		output << fm["footer.frag", {"time"=>Time.new}]
 		output
 	end
 	def get_third_party_jars
@@ -201,7 +201,6 @@ if __FILE__ == $0
 		b.copy_up
 		exit
 	end
-
 	
 	b.add_project Project.new("Utilities","util","bootstrap","src","HEAD")
 	b.add_project Project.new("Utilities","util","server","src","HEAD")
