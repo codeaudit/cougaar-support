@@ -103,7 +103,7 @@ end
 
 class Build 
 	CVS_ROOT = ":pserver:anonymous@cougaar.org:/cvsroot/"
-	BUILD_ROOT = "/home/tom/data/cougaarforge/cf-dashboard/"
+	BUILD_ROOT = "/home/tom/cougaarforge/cf-dashboard/"
 	TMP = "working/"
 	PMD = "pmd/"
 	CPD = "cpd/"
