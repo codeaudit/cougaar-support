@@ -1,0 +1,4 @@
+Project admin requests it
+http://cougaarforge.cougaar.org/mailman/create
+Edit /etc/aliases, add the new list
+Run newaliases
