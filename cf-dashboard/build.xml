@@ -50,7 +50,7 @@
 
 	<target name="defrunner">
 		<execon executable="java" parallel="false" failonerror="false">
-			<arg line="-classpath ${buildDir}:/home/tom/data/cougaar/B10_4/lib/build.jar org.cougaar.tools.build.DefRunner" />
+			<arg line="-classpath ${buildDir}:/home/tom/data/cougaarforge/cf-dashboard/build.jar org.cougaar.tools.build.DefRunner" />
 			<fileset dir="${core.workdir}/${core.module}/${core.srcdir}" >
 				<include name="**/*.def" />
 			</fileset>
