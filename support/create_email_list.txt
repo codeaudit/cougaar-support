@@ -2,3 +2,5 @@ Project admin requests it
 /usr/local/mailman/bin/newlist foo-devel@cougaar.org wwright@cougaar.org
 Edit /etc/aliases, add the new list
 Run newaliases
+
+###

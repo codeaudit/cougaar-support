@@ -21,6 +21,9 @@ cp -r /tmp/gforge_bkp/www/usage_all/ www/
 cp -r /tmp/gforge_bkp/www/docsredirect/ www/
 cp /tmp/gforge_bkp/www/project/showfiles.php www/project/
 cp /tmp/gforge_bkp/www/project/clickthru.php www/project/
+- note that license URL and enable/disable are specified in
+  /etc/gforge/local.inc
+mkdir www/documents && cp /tmp/gforge_bkp/www/documents/license.html www/documents
 
 Copy www/include/features_boxes stuff back in
 cp /tmp/gforge_bkp/www/register/projectinfo.php www/register/
