@@ -1,5 +1,6 @@
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="debiansf.css" />
 <title>
 CougaarForge Admin Guide
 </title>
@@ -12,34 +13,99 @@ CougaarForge Admin Guide
 
 <hr>
 
-<center><h3>Contents</h3></center>
-<a href="#db">Doing a DB upgrade</a>
-<br/><a href="#cust">Customizations</a>
+<h3>Initial setup</h3>
+<a href="#cust">Customizations</a>
 <br/><a href="#cron">Cron jobs</a>
-<br/><a href="#list">Mailing list creation</a>
+<h3>Day to day tasks</h3>
+<a href="#list">Mailing list creation</a>
+<h3>Misc</h3>
+<a href="#db">Doing a DB upgrade</a>
 <br/><a href="#changelog">Changelog</a>
 
 <hr>
-<a name="db"/>
-<h4>Doing a DB upgrade</h4>
-<p>
-Some notes on a major version upgrade of PostgreSQL (v7.3 to v7.4.5) are in the document "<a href="http://cougaar.org/cgi-bin/viewcvs.cgi/support/?cvsroot=support">upgrading_postgresql.txt</a>".
+<h3>Initial setup</h3>
 
-<hr>
-
-
-<a name="cust"/>
+<a name="cust"></a>
 <h4>Customizations</h4>
 <p>
-Details of the CougaarForge customizations to the standard stock GForge installation are in the document "<a href="http://cougaar.org/cgi-bin/viewcvs.cgi/support/?cvsroot=support">customization.txt</a>".
+Here are the details of the our CougaarForge customizations to the standard GForge installation:
 
-<hr>
+<pre>
+If upgrading from CVS:
+-cvs export -d tmp/ -D tomorrow gforge
+-mv tmp gforge
+-tar -zcf copyover.tar.gz gforge/
+-scp copyover.tar.gz gforge@cougaar.org:tmp/
+else just get tarball with wget
 
-<a name="cron"/>
+mv /var/www/gforge-3.0/www /tmp/gforge_bkp/
+Run new db/ scripts
+Move old www/ and common/ to upgrades dir
+Copy new www/ and common/ in
+chown -R gforge:gforge www/ common/
+Copy www/.htaccess back in
+Copy usage/ and usage_all/ back in
+
+cp -R tmp/gforge_bkp/www/icons/ www/
+cp -R tmp/gforge_bkp/www/errata/ www/
+mkdir www/documents && cp /tmp/gforge_bkp/www/documents/license.html www/documents
+
+cp -R tmp/gforge_bkp/www/themes/cougaarforge www/themes/
+cp -R tmp/gforge_bkp/www/themes/savannah www/themes/
+cp tmp/gforge_bkp/www/index_std.php www/
+Copy in new local.inc properties
+Restart web server
+
+Copy www/include/features_boxes stuff back in
+cp tmp/gforge_bkp/www/register/projectinfo.php www/register/
+cp tmp/gforge_bkp/www/robots.txt www/
+cp -R tmp/gforge_bkp/www/docs/site/ www/docs/site
+
+www/export/index.php
+- remove various broken items
+www/project/admin/index.php 
+- remove tarballs link
+- remove 'htdocs' 
+www/include/project_home.php 
+- Add Webalizer link
+- Add array and blurb for link to Bugzilla
+www/download.php 
+- Header("Content-type: application/octet-stream");
+Base.tab 
+- "New user with SSL" -> New user
+www/include/features_boxes.php 
+	- Remove "Highest Ranked Users"
+	- Add Webalizer link to usage_all
+ 	- Remove group_id = 7 from top downloads
+www/scm/index.php
+- delete the beta viewers
+- hardcoded user_id == 102, blah. (?)
+www/scm/others-files-in-this-directory
+- chmod to 600 or remove
+common/search/SearchQuery.class
+- change seach length from 3 to 2
+- change line 96 to removed % from filtered characters hash
+License clickthru
+- modify www/frs/showfiles.php so that each file link goes to clickthru.php
+- note exclusion of group_id=7
+- copy www/frs/clickthru.php /var/gforge-3.0/www/frs/
+- note that license URL and enable/disable are specified in /etc/gforge/local.inc
+www/themes/savannah/menu.php 
+- copy in code from usemodwiki plugin groupmenu hook
+www/docman/view.php
+- tweaking types to ensure PDF mime type was set when appropriate
+Copy in new cron jobs
+
+================================
+To find changed stuff:
+find /var/www/gforge-3.0/ -type f -ctime +30
+</pre>
+
+<a name="cron"></a>
 <h4>Cronjobs</h4>
 <p>
 GForge requires a bunch of cronjobs to run correctly.   They are currently in the root user's cron tab:
-<table width='75%'>
+<table class="standardtable">
 <tr>
 <th>Purpose</th>
 <th>Crontab entry</th>
@@ -170,7 +236,8 @@ GForge requires a bunch of cronjobs to run correctly.   They are currently in th
 </table>
 
 <hr>
-<a name="list"/>
+<h3>Day to day tasks</h3>
+<a name="list"></a>
 <h4>Mailing list creation</h4>
 <p>
 When a user enters a new mailing list into the GForge user interface, the new list is not immediately created.  Instead, the "mailing_list_check.php" script noted above runs every 10 minutes and, if it finds a new list creation request, emails the root user.  When the root user gets the email, he should:
@@ -193,10 +260,76 @@ This reads in the new list aliases and sends a SIGHUP to Sendmail.
 </ul>
 
 <hr>
-<a name="changelog"/>
+<h3>Misc</h3>
+
+<a name="db"></a>
+<h4>Doing a DB upgrade</h4>
+<p>
+<pre>
+Here's a rough overview of the steps I took to upgrade CougaarForge to PostgreSQL 7.4.5 (from 7.3.2) and PHP 4.3.8 (from 4.2.3) and also move from RPMs to locally compiled versions:
+
+Compiling PostgreSQL
+- Required newer version of Bison; downloaded bison-1.875.tar.gz,
+  ./configure && make && make install
+- Untarr'd postgresql-7.4.5.tar.gz into /usr/local/src
+- ./configure --prefix=/var/pgsql && make && make install
+
+Compiling PHP
+- Untarr'd php-4.3.8.tar.gz into /usr/local/src
+- ./configure  --enable-cli --with-apache=../apache_1.3.31
+  --with-pgsql=/usr/local/pgsql --with-gd --with-zlib-dir=/usr/include 
+-- oops, needs libpng-devel, installed libpng-devel-1.2.2-8.i386.rpm, that
+fixed it
+-- make && make install
+
+Recompiling Apache
+- recompiled Apache to make sure new PHP module was all set
+-- also moving Apache layout from GNU to Apache
+-- ./configure --with-layout=Apache --enable-shared=max
+--activate-module=src/modules/php4/libphp4.a --enable-shared=php4
+-- make && make install
+
+Shutdown webserver
+
+Backup database
+- took 2 minutes, 35 seconds, created a 411 MB tar file
+- /etc/rc.d/init.d/postgresql stop
+
+Uninstall old PG version
+- rpm -e postgresql postgresql-devel postgresql-server postgresql-docs
+postgresql-libs php-pgsql
+
+Start up new DB engine
+- edit /etc/profile
+-- add "PGDATA=/var/pgsql/data" and export
+-- add /var/pgsql/bin/ to PATH
+/usr/sbin/groupadd postgres
+/usr/sbin/useradd -g postgres postgres
+mkdir /var/pgsql/data && chown postgres:postgres /var/pgsql/data && chmod g+s /var/pgsql/data
+touch /var/log/postgresql.log && chown postgres:postgres /var/log/postgresql.log
+su -l postgres
+/var/pgsql/bin/initdb -D /var/pgsql/data
+edit /var/pgsql/data/pg_hba.conf
+- remove IPv6 record
+su -l postgres
+run /var/pgsql/bin/mypg_start
+createuser gforge -W
+createdb -U gforge gforge
+pg_restore -d gforge < /var/backups/pgsql/Fri.tar.gz 
+- took 5 minutes, 46 seconds
+
+Started up webserver
+- edited httpd.conf, moved logs to /var/log/httpd/
+- removed front page news item
+- deleted webserver files from old gnu-style locations
+- updated /etc/webalizer/* to point to new logs
+</pre>
+
+<a name="changelog"></a>
 <h4>Changelog</h4>
 <p>
-3/22/2005: Initial draft; mostly linking out to other documents.  We'll probably consolidate those into this one. [TLC]
+3/23/2005: Consolidated several documents; added a stylesheet reference; fixed some anchors. [TLC]
+<br/>3/22/2005: Initial draft; mostly linking out to other documents.  We'll probably consolidate those into this one. [TLC]
 <br/>
 
 </body>
