@@ -55,6 +55,8 @@ License clickthru
 - note exclusion of group_id=7
 - copy www/frs/clickthru.php /var/gforge-3.0/www/frs/
 - note that license URL and enable/disable are specified in /etc/gforge/local.inc
+www/themes/savannah/menu.php 
+- copy in code from usemodwiki plugin groupmenu hook
 Copy in new cron jobs
 
 ================================
