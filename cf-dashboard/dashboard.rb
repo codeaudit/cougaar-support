@@ -204,8 +204,6 @@ if __FILE__ == $0
 	
 
 	b.add_project Project.new("Utilities","util","bootstrap","src","HEAD")
-	b.build if ARGV.include?("-b") 
-
 	b.add_project Project.new("Utilities","util","server","src","HEAD")
 	b.add_project Project.new("Utilities","util","util","src","HEAD")
 	b.add_project Project.new("Utilities","util","contract","src","HEAD")
@@ -218,6 +216,7 @@ if __FILE__ == $0
 	b.add_project Project.new("Quo","qos","quo","src","HEAD")
 	b.add_project Project.new("MTS","mts","mtsstd","src","HEAD")
 
+	b.build if ARGV.include?("-b") 
 	if ARGV.include?("-r") 
 		File.open("index.html", "w") {|file| file.syswrite(b.render)}
 	end
