@@ -97,13 +97,7 @@ class Build
 			br.parse_pmd_output(p.pmd_output)
       pmd="<a href=\"#{PMD}#{p.pmd_output}\">#{br.pmd.to_s}</a>" unless br.pmd == 0
 			parse_cpd_output(p.cpd_output, br)
-      if br.cpd == 0
-      	cpd="0"
-      elsif br.cpd == "TBD"
-        cpd="TBD"
-      else
-        cpd="<a href=\"#{CPD}/#{p.cpd_output}\">#{br.cpd}</a>"
-      end
+      cpd="<a href=\"#{CPD}/#{p.cpd_output}\">#{br.cpd}</a>" if br.cpd != 0
 			output << fm["row.frag", {"title"=>p.title, 		
 																"color"=>br.compile_succeeded ? "#00FF00" : "red", 
 																"module"=>"<a href=\"#{BUILD + p.ant_text_output}\">#{p.mod} (#{br.deprecation_warnings})</a>", 
@@ -161,18 +155,10 @@ class Build
 		`rm -rf #{TMP}#{BUILD}`
 	end
   def parse_cpd_output(f, result)
-    if !File.exists?(CPD + f) or File.size(CPD + f) < 10
-      result.cpd="TBD"
+    if !File.exists?(CPD + f) or File.size(CPD + f) < 50
       return
     end
-    if File.size(CPD + f) < 50
-      return
-    end
-    File.open(CPD + f).each {|line|
-      if line["============================="] != nil
-        result.cpd += 1
-      end
-    }
+    File.open(CPD + f).each {|line| result.cpd += 1 if line["============================="] != nil }
   end
   def parse_ant_build_output(filename, result)
     build_xml=REXML::Document.new File.new(filename)
