@@ -1,0 +1,55 @@
+So you've just started a new CougaarForge project!  Congratulations.  Now, here are some things you might want to do to get a handle on your project:
+
+The web site for your project is at /var/www/gforge-3.0/[yourproject]/.  You can copy content into that directory from Linux using secure copy, like this:
+
+[tom@cougaarforge support]$ scp index.html
+tom@cougaarforge.cougaar.org:/var/www/gforge-3.0/support/
+index.html           100%
+|**********************************************************************|    25
+00:00
+[tom@cougaarforge support]$
+
+From Windows, you can use secure copy if you download pscp from the Putty web
+site -
+http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html.  Use it like
+this:
+
+C:\>pscp test.html 
+tom@cougaarforge.cougaar.org:/var/www/gforge-3.0/support/
+tom@cougaarforge.cougaar.org's password:
+test.html                 |         11 kB |  11.2 kB/s | 
+ETA: 00:00:00 | 100%
+
+C:\>
+
+You've probably got some code you want to import into the CVS repository.
+  You can do that using the CVS import command:
+
+[tom@cougaarforge support]$ cvs import -m "initial import" support tom start
+N support/test.txt
+
+No conflicts created by this import
+
+[tom@cougaarforge support]$ 
+
+Or, if you already have a CVS repository in place, we can copy that into the
+CougaarForge CVS tree so you can keep all your branches and history and such.
+If you want to do that, please post a note to the Support project -
+http://cougaarforge.cougaar.org/projects/support/.
+
+To make sure you get notified when anything happens on your project, you can
+  go to each of the "trackers" - i.e., the bug tracker, the feature request
+tracker - and enable email notification.  To do that, go to your project page,
+click on "Tracker" on the left side of the page, click on "Admin" at the top
+of the page, click on "Bugs", click on "Update preferences", and put your
+email address in the "Send email on new submission to address:" box.  Also,
+you can check the box right below it that says "Send email on all changes".
+
+You might also want to go to the discussion forums and click the "monitor"
+button at the top of each forum.  That way you'll get an email if someone
+posts to the forum.
+
+Please post to the "Support" forum
+- http://cougaarforge.cougaar.org/forum/forum.php?forum_id=6 -  if you have a suggestion for improving this
+document, thanks! 
+- 
