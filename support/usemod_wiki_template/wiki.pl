@@ -195,6 +195,12 @@ $BracketImg   = 1;      # 1 = [url url.gif] becomes image link, 0 = no img
 @HtmlSingle = qw(br p hr li dt dd tr td th);
 @HtmlPairs = (@HtmlPairs, @HtmlSingle);  # All singles can also be pairs
 
+# == WikiTemplates patch =================================================
+use vars qw( $WTName $WTOverwriteExisting );
+$WTName = "WikiTemplates";   # name of the page where templates are stored.
+$WTOverwriteExisting = 1;    # 1 = templates can replace existing content.
+# == WikiTemplates patch =================================================
+
 # == You should not have to change anything below this line. =============
 $IndentLimit = 20;                  # Maximum depth of nested lists
 $PageDir     = "$DataDir/page";     # Stores page data
@@ -3203,6 +3209,12 @@ sub DoEdit {
     return;
   }
   # Consider sending a new user-ID cookie if user does not have one
+# == WikiTemplates patch =================================================
+  my $templateText = "";
+  if ( my $template = $q->param("template") ) {
+    $templateText = &GetTemplateText( $template, $id );
+  }
+# ========================================================================
   &OpenPage($id);
   &OpenDefaultText();
   $pageTime = $Section{'ts'};
@@ -3221,6 +3233,11 @@ sub DoEdit {
     }
   }
   $oldText = $Text{'text'};
+# == WikiTemplates patch =================================================
+  if ( $Page{'revision'} == 0 || $WTOverwriteExisting ) {
+    $oldText = $templateText if $templateText;
+  }
+# ========================================================================
   if ($preview && !$isConflict) {
     $oldText = $newText;
   }
@@ -3250,6 +3267,13 @@ sub DoEdit {
     print T('Last save time:'), ' ', &TimeToText($oldTime),
           " (", T('Current time is:'), ' ', &TimeToText($Now), ")<br>\n";
   }
+
+# == WikiTemplates patch =================================================
+  if ( $Page{'revision'} == 0 || $WTOverwriteExisting ) {
+    print &GetTemplateForm($id) if $WTName;
+  }
+# ========================================================================
+
   print &GetFormStart();
   print &GetHiddenValue("title", $id), "\n",
         &GetHiddenValue("oldtime", $pageTime), "\n",
@@ -3316,6 +3340,91 @@ sub DoEdit {
   print '</div>';
   print &GetMinimumFooter();
 }
+
+# == WikiTemplates patch =================================================
+sub GetTemplateForm {
+
+  my $id = shift;
+
+  my @templates = &GetTemplateList();
+
+  my $result = &GetFormStart() . "\n";
+
+  $result .= $q->popup_menu(-name=>'template', -values=>\@templates);
+  $result .= &GetHiddenValue("action", "edit") . "\n";
+  $result .= &GetHiddenValue("id", $id) . "\n";
+
+  $result .= $q->submit(-name=>'use', -value=>T('Use template')) . "\n";
+
+  $result .= $q->endform();
+
+  return $result;
+}
+
+sub GetTemplateList {
+
+  my @list = T( "None" );
+
+  my $dir = $PageDir . "/" . &GetPageDirectory($WTName) . "/" . $WTName;
+
+  opendir(TEMPLATES, $dir);
+  my @files = readdir(TEMPLATES);
+  closedir(TEMPLATES);
+
+  foreach my $file ( @files ) {
+    next if $file =~ /^\./;
+    push( @list, $file ) if $file =~ s/\.db$//;
+  }
+
+  return @list;
+}
+
+sub GetTemplateText {
+
+  my $template = shift;
+  my $id = shift;
+
+  return unless $template;
+  return if $template eq T("None");
+
+  my $page = "$WTName/$template";
+
+  &OpenPage( $page );
+  &OpenDefaultText();
+
+  return &PerformTemplateSubstitutions( $Text{'text'}, $id );
+}
+
+sub PerformTemplateSubstitutions {
+
+  my $text = shift;
+  my $id = shift;
+
+  my $today = &CalcShortDayNow();
+  my $username = &GetParam("username", "");
+
+  $text =~ s/%%%\s*date\s*%%%/$today/gi;
+  $text =~ s/%%%\s*this\s*%%%/$id/gi;
+  $text =~ s/%%%\s*user\s*%%%/$username/gi;
+
+  return $text;
+}
+
+sub CalcShortDay {
+  my ($ts) = @_;
+
+  $ts += $TimeZoneOffset;
+  my ($sec, $min, $hour, $mday, $mon, $year) = localtime($ts);
+
+  return sprintf( "%d-%0.2d-%0.2d", $year + 1900, $mon + 1, $mday );
+}
+
+sub CalcShortDayNow {
+  return CalcShortDay($Now);
+}
+# ========================================================================
+
+
 
 sub GetTextArea {
   my ($name, $text, $rows, $cols) = @_;
