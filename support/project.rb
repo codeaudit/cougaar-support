@@ -5,17 +5,21 @@ require 'fileutils'
 WWW_DIR_PREFIX="/var/www/gforge-projects/"
 
 =begin
-Hi Dana -
+Hi Rob -
 
-OK, your new Agent Workbench project is ready to go:
+OK, the ExNihilo project should be all set:
 
-http://cougaar.org/projects/awb/
+http://cougaar.org/projects/exnihilo/
 
-You might want to read thru the new project admin checklist here:
+You might want to read the "new project admin" checklist:
 
-http://cougaar.org/docman/view.php/7/7/new_project_admin_checklist.txt
+http://cougaar.org/docman/?group_id=7
 
-Please let me know if you have any questions, thanks!
+If you have any questions, please post to the support forum:
+
+http://cougaar.org/forum/forum.php?forum_id=6
+
+Thanks!
 
 Yours,
 
