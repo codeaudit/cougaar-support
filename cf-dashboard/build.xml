@@ -23,7 +23,12 @@
 					compiler="javac1.4" 
 					srcdir="${core.workdir}/${core.module}/${core.srcdir}" 
 					destdir="${buildDir}"/>
-	</target>
+		    <copy todir="${buildDir}">
+		        <fileset dir="${core.workdir}/${core.module}/${core.srcdir}">
+		            <include name="**/*.def"/>
+		        </fileset>
+		    </copy>
+			</target>
 
 	<target name="test" if="core.hasTests">
 		<junit printsummary="yes" haltonfailure="no">
@@ -43,10 +48,10 @@
 		</junit>
 	</target>
 
-	<target name="defrunner" if="core.usesDefRunner">
+	<target name="defrunner">
 		<execon executable="java" parallel="false" failonerror="false">
-			<arg line="-classpath ${core.cougaar}/clib/build.jar org.cougaar.tools.build.DefRunner" />
-			<fileset dir="${core.srcdir}" >
+			<arg line="-classpath ${buildDir}:/home/tom/data/cougaar/B10_4/lib/build.jar org.cougaar.tools.build.DefRunner" />
+			<fileset dir="${core.workdir}/${core.module}/${core.srcdir}" >
 				<include name="**/*.def" />
 			</fileset>
 		</execon>
