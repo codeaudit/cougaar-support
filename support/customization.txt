@@ -33,25 +33,37 @@ cp -r /tmp/gforge_bkp/www/docs/site/ www/docs/site
 cp -R /tmp/gforge_bkp/www/themes/cougaarforge www/themes/
 cp -R /tmp/gforge_bkp/www/themes/savannah www/themes/
 
-www/project/admin/index.php - remove tarballs link, apply "add user" patch
+Run any new SQL scripts
 
-www/forum/include/ForumHTML.class - change to remove admin link from non-admin
-viewers - hardcoded user_id == 102, blah.
-www/include/project_home.php - Add usage link
+www/project/admin/index.php 
+- remove tarballs link, apply "add user" patch
 
-Change in www/download.php Header("Content-type: application/octet-stream");
+www/forum/include/ForumHTML.class 
+- change to remove admin link from non-admin
 
-Run any new SQL updates
+viewers 
+- hardcoded user_id == 102, blah.
 
-Make changes to Base.tab - "Login with SSL" -> Login
+www/include/project_home.php 
+- Add usage link
+- Add array and blurb for link to Bugzilla
+
+www/download.php 
+- Header("Content-type: application/octet-stream");
+
+Base.tab 
+- "Login with SSL" -> Login
+
 www/include/features_boxes.php 
 	- Remove "Highest Ranked Users"
 	- change 'most active' query to return 10 projects
 	- add a "-5" to the "active projects" query
 
-Edit www/scm/index.php, delete the beta viewers
-Edit www/search/index.php, change seach length from 3 to 2
+www/scm/index.php
+- delete the beta viewers
 
+www/search/index.php
+- change seach length from 3 to 2
 
 ================================
 To find changed stuff:
