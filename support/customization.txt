@@ -1,69 +1,58 @@
+If upgraing from CVS:
+-cvs export -d tmp/ -D tomorrow gforge
+-mv tmp gforge
+-tar -zcf copyover.tar.gz gforge/
+-scp copyover.tar.gz gforge@cougaar.org:tmp/
+else just get tarball with wget
+
 mv /var/www/gforge-3.0/www /tmp/gforge_bkp/
-mv /var/www/gforge-3.0/common /tmp/gforge_bkp/
+Run new db/ scripts
+Move old www/ and common/ to upgrades dir
+Copy new www/ and common/ in
+chown -R gforge:gforge www/ common/
+Copy www/.htaccess back in
+Copy usage/ and usage_all/ back in
 
-cvs export -d tmp/ -D tomorrow gforge
-mv tmp gforge
-tar -zcf copyover.tar.gz gforge/
-scp copyover.tar.gz gforge@cougaar.org:tmp/
-
-ssh into CougaarForge
-
-cd tmp/
-tar -zxf copyover.tar.gz
-cd /var/www/gforge-3.0/
-mv ~/tmp/gforge/www/ .
-mv ~/tmp/gforge/common/ .
-
-cp -r /tmp/gforge_bkp/www/icons/ www/
-cp -r /tmp/gforge_bkp/www/usage/ www/
-cp -r /tmp/gforge_bkp/www/usage_all/ www/
-cp -r /tmp/gforge_bkp/www/docshostredirect/ www/
-cp -r /tmp/gforge_bkp/www/errata/ www/
-cp /tmp/gforge_bkp/www/project/showfiles.php www/project/
-cp /tmp/gforge_bkp/www/project/clickthru.php www/project/
-- note that license URL and enable/disable are specified in
-  /etc/gforge/local.inc
+cp -R tmp/gforge_bkp/www/icons/ www/
+cp -R tmp/gforge_bkp/www/errata/ www/
 mkdir www/documents && cp /tmp/gforge_bkp/www/documents/license.html www/documents
 
+cp -R tmp/gforge_bkp/www/themes/cougaarforge www/themes/
+cp -R tmp/gforge_bkp/www/themes/savannah www/themes/
+cp tmp/gforge_bkp/www/index_std.php www/
+Copy in new local.inc properties
+Restart web server
+
 Copy www/include/features_boxes stuff back in
-cp /tmp/gforge_bkp/www/register/projectinfo.php www/register/
-cp /tmp/gforge_bkp/www/index_std.php www/
-cp /tmp/gforge_bkp/www/robots.txt www/
-cp -r /tmp/gforge_bkp/www/docs/site/ www/docs/site
-cp -R /tmp/gforge_bkp/www/themes/cougaarforge www/themes/
-cp -R /tmp/gforge_bkp/www/themes/savannah www/themes/
+cp tmp/gforge_bkp/www/register/projectinfo.php www/register/
+cp tmp/gforge_bkp/www/robots.txt www/
+cp -R tmp/gforge_bkp/www/docs/site/ www/docs/site
 
-Run any new SQL scripts
-
+www/export/index.php
+- remove various broken items
 www/project/admin/index.php 
-- remove tarballs link, apply "add user" patch
-
-www/forum/include/ForumHTML.class 
-- change to remove admin link from non-admin
-
-viewers 
-- hardcoded user_id == 102, blah.
-
+- remove tarballs link
+- remove 'htdocs' 
 www/include/project_home.php 
-- Add usage link
+- Add Webalizer link
 - Add array and blurb for link to Bugzilla
-
 www/download.php 
 - Header("Content-type: application/octet-stream");
-
 Base.tab 
-- "Login with SSL" -> Login
-
+- "New user with SSL" -> New user
 www/include/features_boxes.php 
 	- Remove "Highest Ranked Users"
-	- change 'most active' query to return 10 projects
-	- add a "-5" to the "active projects" query
-
+	- Add Webalizer link to usage_all
 www/scm/index.php
 - delete the beta viewers
-
-www/search/index.php
+- hardcoded user_id == 102, blah. (?)
+common/search/SearchQuery.class
 - change seach length from 3 to 2
+License clickthru
+- modify www/frs/showfiles.php so that each file link goes to clickthru.php
+- copy www/frs/clickthru.php /var/gforge-3.0/www/frs/
+- note that license URL and enable/disable are specified in /etc/gforge/local.inc
+Copy in new cron jobs
 
 ================================
 To find changed stuff:
