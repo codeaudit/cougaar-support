@@ -46,6 +46,7 @@ class Build
 	CPD = "cpd/"
 	BUILD = "build/"
 	REPORTS = "reports/"
+	WWW = "tom@cougaar.org:/var/www/gforge-projects/support/build/"
 	def initialize()
 		@projects = []
    	Dir.mkdir(TMP) unless File.exist? TMP
@@ -100,19 +101,19 @@ class Build
 			# JavaNCSS processing
       `find #{TMP}/#{p.mod}/#{p.srcdir} -name *.java > #{TMP}/javancssfiles.txt`
 			`/usr/local/javancss/bin/javancss @#{TMP}/javancssfiles.txt -xml > #{REPORTS}#{p.ncss_output}`
+
+			# clean up
+			`rm -rf #{TMP}#{p.mod}` 
 		}
-	end
-	def clean		
-		`rm -rf TMP`
 	end
 	def prepend_working_dir(name)
 		REPORTS + name
 	end
 	def copy_up
-		`scp index.html cougaar.png tom@cougaar.org:/var/www/gforge-projects/support/build/`
-		`scp pmd/* tom@cougaar.org:/var/www/gforge-projects/support/build/pmd/`
-		`scp cpd/* tom@cougaar.org:/var/www/gforge-projects/support/build/cpd/`
-		`scp build/* tom@cougaar.org:/var/www/gforge-projects/support/build/build/`
+		`scp index.html cougaar.png #{WWW}`
+		`scp pmd/* #{WWW}/pmd/`
+		`scp cpd/* #{WWW}/cpd/`
+		`scp build/* #{WWW}/build/`
 	end
   def parse_cpd_output(f, result)
     if !File.exists?(CPD + f) or File.size(CPD + f) < 10
@@ -167,7 +168,10 @@ if __FILE__ == $0
 	b = Build.new
 	b.add_project Project.new("core","javaiopatch","src","B10_4")
 	b.add_project Project.new("util","bootstrap","src","B10_4")
+
 	b.build if ARGV.include?("-b") 
-	puts b.render if ARGV.include?("-r") 
+	if ARGV.include?("-r") 
+		File.open("index.html", "w") {|file| file.syswrite(b.render)}
+	end
 	b.copy_up if ARGV.include?("-copy") 
 end
