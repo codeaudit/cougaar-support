@@ -1,0 +1,78 @@
+Dear Colleague:
+
+We are writing to inform you about the First OpenCougaar Conference
+to be held in New York, on July 20, 2004, colocated with AAMAS 2004.
+
+We are contacting you directly by email because either:
+
+1) We obtained your name from citation indices (citeseer, ACM, IEEE
+eXplore, NSF award abstracts) indicating that you have recent
+publications in research areas relevant to survivable multi-agent 
+systems.
+
+2) You have been involved in past workshops and meetings (sponsored by
+ACM, DARPA or IEEE) related to survivable multi-agent systems.
+
+3) You are a student or co-author of someone in category (1) or (2).
+
+OpenCougaar Conference 2004 ---
+
+The first OpenCougaar Conference will bring together the open source
+Cougaar (www.cougaar.org) community and the larger community of
+researchers and application developers interested in creating practical,
+24x7 large-scale multi-agent systems.
+It will provide a forum for this expanded community to exchange
+ideas for building industrial-strength MAS and to compare and contrast
+particular agent architectures developed for this purpose. OpenCougaar'04
+will be run coincident with AAMAS 2004 in New York, NY, on 20 July 2004.
+The conference will feature a mix of invited talks, selected presentations,
+and panel-led open discussion forums.
+
+Please see the conference web site https://www.schafertmd.com/cougaar2004/ 
+for the preliminary program.
+Please visit http://cougaar.org/ to download the Cougaar open source agent 
+software.
+
+--- OpenCougaar Conference 2004 Keynote Speech ---
+
+Intelligent Agents meet the Semantic Web in the Aether
+
+                      Professor Tim Finin
+          Computer Science and Electrical Engineering
+            University of Maryland, Baltimore County
+                    http://umbc.edu/~finin/
+
+The concept of an agent is ubiquitous in Computer Science.
+We employ it to talk about and to model a wide range of
+things from physical robots, to modules in client-server
+architectures, to human, to Internet-based information
+retrieval programs, to intelligent personal assistants.
+During the past decade a "software agents" paradigm has
+emerged which views agents as autonomous, cooperating
+processes which use rich agent communication languages to
+exchange information and knowledge and to coordinate their
+activities.  This has been seen as a way to capitalize on
+the opportunities (and solve many of the problems) created
+by the revolution brought about by the Internet and Web.
+
+The vision has not yet materialized. Was it an example of an
+AI dream or "irrational exuberance" of the dot com era.
+I'll argue that the vision is still a good one and will
+describe how two new components might re-invigorate it.  The
+first is the semantic web -- "an extension of the current
+web in which information is given well-defined meaning,
+better enabling computers and people to work in
+cooperation."  The second is emergence of pervasive
+computing environments with requirements that multiagent
+systems are well suited to address.  The argument will be
+illustrated using examples of current research at UMBC.
+
+Tim Finin is a Professor in the Department of Computer
+Science and Electrical Engineering at the University of
+Maryland Baltimore County (UMBC).  He has over 30 years of
+experience in the applications of AI to problems in
+information systems, intelligent interfaces and robotics.
+He holds degrees from MIT and the University of
+Illinois. Prior to joining the UMBC, he held positions at
+Unisys, the University of Pennsylvania, and the MIT AI
+Laboratory.
