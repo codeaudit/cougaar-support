@@ -1,6 +1,7 @@
 #!/usr/local/bin/ruby
 
 require 'ikko.rb'
+require 'fileutils'
 require 'rexml/document'
 
 class Project
@@ -55,20 +56,29 @@ end
 
 class Build 
 	CVS_ROOT = ":pserver:anonymous@cougaar.org:/cvsroot/"
+	BUILD_ROOT = "/home/tom/data/cf-dashboard/"
 	TMP = "working/"
 	PMD = "pmd/"
 	CPD = "cpd/"
 	BUILD = "build/"
 	REPORTS = "reports/"
+	JARS = "jars/lib/"
 	WWW = "tom@cougaar.org:/var/www/gforge-projects/support/build/"
 	def initialize(verbose)
 		@projects = []
 		@verbose = verbose
+		ENV['JAVA_HOME']="/usr/local/java"
+		ENV['ANT_HOME']="/usr/local/ant"
+		ENV['ANT_OPTS']="-Xmx1024m"
+		ENV['PATH']="#{ENV['PATH']}:#{ENV['JAVA_HOME']}/bin:#{ENV['ANT_HOME']}/bin"
+
    	Dir.mkdir(TMP) unless File.exist? TMP
    	Dir.mkdir(CPD) unless File.exist? CPD
    	Dir.mkdir(PMD) unless File.exist? PMD
    	Dir.mkdir(BUILD) unless File.exist? BUILD
    	Dir.mkdir(TMP + "build") unless File.exist? TMP + "build"
+		FileUtils.mkdir_p(TMP + "build/") unless File.exists?(TMP + "build/")
+		FileUtils.mkdir_p(JARS) unless File.exists?(JARS)
    	Dir.mkdir(REPORTS) unless File.exist?(REPORTS)
 		glom_classpath
 	end
@@ -108,15 +118,16 @@ class Build
 		output
 	end
 	def get_third_party_jars
-		`cvs -Q -d:pserver:anonymous@cougaar.org:/cvsroot/core export -D tomorrow jars/lib/`
+		`rm -rf jars/`
+		`cvs -Q -d#{CVS_ROOT}core export -D tomorrow #{Build::JARS}`
 	end
 	def glom_classpath
 		ENV["CLASSPATH"] = "/usr/local/pmd-1.5/lib/pmd-1.5.jar:"
 		ENV["CLASSPATH"] += ":/usr/local/pmd-1.5/lib/jaxen-core-1.0-fcs.jar:"
 		ENV["CLASSPATH"] += ":/usr/local/pmd-1.5/lib/saxpath-1.0-fcs.jar:"
-		ENV["CLASSPATH"] += ":/home/tom/data/cf-dashboard/#{TMP}#{BUILD}:"
-		Dir.new("jars/lib/").entries.select {|x| (x == "." or x == "..") ? nil : x}.compact.each {|jar| 
-			ENV["CLASSPATH"] += ":/home/tom/data/cf-dashboard/jars/lib/" + jar + ":"
+		ENV["CLASSPATH"] += ":" + BUILD_ROOT + TMP + ":" + BUILD
+		Dir.new(JARS).entries.select {|x| (x == "." or x == "..") ? nil : x}.compact.each {|jar| 
+			ENV["CLASSPATH"] += ":" + BUILD_ROOT + JARS + jar + ":"
 		}
 		end
 	def build
@@ -132,7 +143,9 @@ class Build
 			`/usr/local/javancss/bin/javancss @#{TMP}/javancssfiles.txt -xml > #{REPORTS}#{p.ncss_output}`
 
 			# clean up
-			`rm -rf #{TMP}#{p.mod}` 
+			cmd = "rm -rf " + TMP + p.mod
+			`#{cmd}` 
+			FileUtils.mkdir_p(TMP + "build/") if p.mod == "build" # tricky tricky!
 		}
 	end
 	def prepend_working_dir(name)
@@ -187,11 +200,6 @@ class Build
 end
 
 if __FILE__ == $0
-	ENV['JAVA_HOME']="/usr/local/java"
-	ENV['ANT_HOME']="/usr/local/ant"
-	ENV['ANT_OPTS']="-Xmx1024m"
-	ENV['PATH']="#{ENV['PATH']}:#{ENV['JAVA_HOME']}/bin:#{ENV['ANT_HOME']}/bin"
-
 	b = Build.new(ARGV.include?("-v"))
 
 	if ARGV.include?("-jars")
@@ -205,6 +213,7 @@ if __FILE__ == $0
 		exit
 	end
 
+	b.add_project Project.new("Build","build","build","src","HEAD",false)
 	b.add_project Project.new("Utilities","util","bootstrap","src","HEAD",false)
 	b.add_project Project.new("Utilities","util","server","src","HEAD",false)
 	b.add_project Project.new("Utilities","util","util","src","HEAD",false)
@@ -224,12 +233,8 @@ if __FILE__ == $0
 	b.add_project Project.new("General Logistics Module","glm","glm","src","HEAD",true) # depends on Planning defs
 	b.add_project Project.new("CSMART","csmart","csmart","src","HEAD",false) # depends on Planning defs
 	b.add_project Project.new("Vishnu Client","vishnu","vishnuClient","src","HEAD", false)
-	#b.add_project Project.new("Service Discovery","servicediscovery","servicediscovery","src","HEAD",false) # depends on Planning, glm, jena (?)
+	b.add_project Project.new("Service Discovery","servicediscovery","servicediscovery","src","HEAD",false) # depends on Planning, glm, jena (?)
 
 	b.build if ARGV.include?("-b") 
-	if ARGV.include?("-r") 
-		File.open("index.html", "w") {|file| file.syswrite(b.render)}
-	end
-
-
+	File.open("index.html", "w") {|file| file.syswrite(b.render)}  if ARGV.include?("-r")
 end
