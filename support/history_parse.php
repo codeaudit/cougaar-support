@@ -8,19 +8,22 @@ require_once('squal_pre.php');
  * '~/CVSROOT/history' file, building agregate stats on the number of
  * checkouts, commits, and adds to each project over the past 24 hours.
  *
- * @version   $Id: history_parse.php,v 1.2 2003-08-05 17:55:36 tom Exp $
+ * @version   $Id: history_parse.php,v 1.3 2003-08-05 17:59:36 tom Exp $
  */
 
-
 $cvsroot="/cvsroot";
+if (!chdir($cvsroot)) {
+	print("Unable to make $cvsroot the working directory.\n");
+	exit;
+}
 
-function rundate($readfile, $group_id, $mon, $day, $year, $day_begin, $day_end) {
+function rundate($historyfile, $group_id, $mon, $day, $year, $day_begin, $day_end) {
 	global $cvsroot;
 	$cvs_co=$cvs_commit=$cvs_add=0;
 	
-	for ($i=0; $i<=count($readfile)-1; $i++) {
+	for ($i=0; $i<=count($historyfile)-1; $i++) {
 		# Split the cvs history entry into its 6 fields.
-		$fields = explode('|',trim($readfile[$i]));
+		$fields = explode('|',trim($historyfile[$i]));
 		$cvstime=$fields[0];	
 		$user=$fields[1];	
 		$curdir=$fields[2];	
@@ -45,13 +48,38 @@ function rundate($readfile, $group_id, $mon, $day, $year, $day_begin, $day_end) 
 
 	$sql = "INSERT INTO stats_cvs_group (month,day,group_id,checkouts,commits,adds) VALUES ('$year$mon','$day','$group_id',$cvs_co,$cvs_commit,$cvs_add)";
 	#print $sql."\n";
-	#$res = db_query($sql);	
-	#print db_error();
+	$res = db_query($sql);	
+	print db_error();
 }
 
-if (!chdir($cvsroot)) {
-	print("Unable to make $cvsroot the working directory.\n");
-	exit;
+function generateTodayStats($historyfile, $group_id) {
+	$today=mktime();
+	$yesterday=mktime(0,0,0,strftime("%m", $today), strftime("%d", $today)-1, strftime("%Y", $today));
+	$day = strftime("%d", $yesterday);
+	$month = strftime("%m", $yesterday);
+	$year = strftime("%Y", $yesterday);
+	rundate($historyfile, $group_id, $month, $day, $year, $yesterday, $today);
+}
+
+function generateStats($historyfile, $group_id, $days) {
+	for ($i =0; $i<$days; $i++) {
+		$day_begin=mktime(0,0,0,5,1 + $i, 2003);
+		$day_end=mktime(0,0,0,5,1 + $i +1, 2003);
+		$day = strftime("%d", $day_begin);
+		$month = strftime("%m", $day_begin);
+		$year = strftime("%Y", $day_begin);
+		rundate($historyfile, $group_id, $month, $day, $year, $day_begin, $day_end);
+	}
+}
+function delete() {
+	$sql = "delete from stats_cvs_group";
+	$res = db_query($sql);	
+	print db_error();
+}
+
+if ($argv[1] != nil && $argv[1] == "delete") {
+	delete();
+	exit();
 }
 
 # get each group
@@ -66,27 +94,19 @@ for ($i=0; $i<count($ids); $i++) {
 		continue;
 	}
 	
-	print "Processing group $group\n\n";
-	flush();
-	
-	$readfile = file("$cvsroot/$group/CVSROOT/history");
-	if (!readfile) {
+	print "Processing group $group\n";
+	$historyfile = file("$cvsroot/$group/CVSROOT/history");
+	if (!$historyfile) {
 		print "Unable to open history for $group\n";
-		return;
+		continue;
 	}
-
-	for ($j =0; $j<120; $j++) {
-  	
-		$day_begin=mktime(0,0,0,5,1 + $j, 2003);
-		$day = strftime("%d", $day_begin);
-		$month = strftime("%m", $day_begin);
-		$year = strftime("%Y", $day_begin);
-  	
-		$day_end=mktime(0,0,0,5,1 + $j +1, 2003);
-
-		rundate($readfile, $group_id, $month, $day, $year, $day_begin, $day_end);
+	if ($argv[1] == nil || $argv[1] == "") {
+		generateTodayStats($historyfile, $group_id);
+	} else {
+		generateStats($historyfile, $group_id, $argv[1]);
 	}
 }
+
 exit;
 
 
