@@ -23,6 +23,7 @@ sed -e 's/Jan/Dec/g' final.txt > final.txt.tmp && mv -f final.txt.tmp final.txt
 # Sort it to make webalizer happy
 sort -t ' ' -k 4.9,4.12n -k 4.5,4.7M -k 4.2,4.3n -k 4.14,4.15n -k 4.17,4.18n -k 4.20,4.21n final.txt > final.sorted
 
+# Note that this should be run as root so it can get at the DNS cache - otherwise it can't do reverse lookups
 /usr/bin/webalizer -i -c qpr.conf
 
 
