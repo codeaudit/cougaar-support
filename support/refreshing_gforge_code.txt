@@ -23,6 +23,8 @@ cp /tmp/gforge_bkp/www/project/showfiles.php www/project/
 cp /tmp/gforge_bkp/www/project/clickthru.php www/project/
 
 Copy www/include/features_boxes stuff back in
+cp /tmp/gforge_bkp/www/register/projectinfo.php www/register/
+cp /tmp/gforge_bkp/www/index_std.php www/
 
 
 ================================
