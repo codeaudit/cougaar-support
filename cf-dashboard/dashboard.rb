@@ -64,6 +64,7 @@ class ProjectGroup
 		@projects << Project.new("CSMART","csmart","csmart","src","HEAD",false) # depends on Planning defs
 		@projects << Project.new("Vishnu Client","vishnu","vishnuClient","src","HEAD", false)
 		@projects << Project.new("Service Discovery","servicediscovery","servicediscovery","src","HEAD",false) # depends on Planning, glm, jena (?)
+		@projects << Project.new("Pizza","tutorials","pizza","src","HEAD",true)
 	end
 	def delete_all_but_first
 		@projects.delete_if {|a| @projects.index(a) > 3 }
