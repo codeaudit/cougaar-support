@@ -92,8 +92,4 @@
 	<target name="doc" if="core.usesJavaDoc">
 		<javadoc sourcepath="${core.srcdir}" classpathref="cougaar.libs" destdir="${docDir}" windowtitle="Javadoc" packagenames="com.*,org.*,edu.*,acme.*,tv.*,safe.*,jabberlib.*,cougaarinstaller.*"/>
 	</target>
-	
 </project>
-
-
-

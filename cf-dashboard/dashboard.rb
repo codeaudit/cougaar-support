@@ -46,7 +46,12 @@ class Build
 		@projects.each {|p| 
 			br = BuildResult.new
 			parse_ant_build_output(prepend_working_dir(p.ant_xml_output),br)
-			output << fm["row.frag", {"repository"=>p.repo, "module"=>p.mod, "cvsTag"=>p.tag, "builtAt"=>br.built_at}]	
+			output << fm["row.frag", {"repository"=>p.repo, 		
+																"color"=>br.compile_succeeded ? "#00FF00" : "red", 
+																"module"=>p.mod, 
+																"cvsTag"=>p.tag, 
+																"builtAt"=>br.built_at, 
+																"deps"=>br.deprecation_warnings}]	
 		}
 		output << fm["footer.frag"]
 		output
@@ -54,11 +59,10 @@ class Build
 	def get_third_party_jars
 	end
 	def build
-		get_third_party_jars()
+		get_third_party_jars
 		@projects.each {|p|
-			cmd = "ant -v -listener org.apache.tools.ant.XmlLogger -DXmlLogger.file=#{REPORTS}#{p.ant_xml_output} -buildfile build.xml -logfile #{REPORTS}#{p.ant_text_output} -Dcore.workdir=#{TMP} -Dcore.repository=#{p.repo} -Dcore.module=#{p.mod} -Dcore.cvsTag=#{p.tag} -Dcore.cvsroot=#{CVS_ROOT} -Dcore.srcdir=#{p.srcdir} checkout compile "
-			puts cmd
-			puts `#{cmd}`
+			cmd = "ant -v -listener org.apache.tools.ant.XmlLogger -DXmlLogger.file=#{REPORTS}#{p.ant_xml_output} -buildfile build.xml -logfile #{REPORTS}#{p.ant_text_output} -Dcore.workdir=#{TMP} -Dcore.repository=#{p.repo} -Dcore.module=#{p.mod} -Dcore.cvsTag=#{p.tag} -Dcore.cvsroot=#{CVS_ROOT} -Dcore.srcdir=#{p.srcdir} timestamp checkout compile "
+			`#{cmd}`
 		}
 	end
 	def clean		
@@ -74,7 +78,7 @@ class Build
     build_xml.elements.each("build/target/task/message[@priority='warn']") do |warning|
 			puts warning
       if warning.text =~ /Starting/
-        result.built_at = warning.text.split("Starting build at ")[1].split("]]")[0].split(" ")[1]
+        result.built_at = warning.text.split(/Starting build at /)[1].split(/\]\]/)[0].split(/ /)[1]
         break
       end
     end
@@ -82,7 +86,7 @@ class Build
   def count_deprecation_warnings(xml)
     result = "0"
     xml.elements.each("build/target/task/message[@priority='error']") do |deprecations|
-      if deprecations.text.size < 20 and deprecations.text =~ " warning"
+      if deprecations.text.size < 20 and deprecations.text =~ / warning/
         result = deprecations.text.split(" ")[0]
       end
     end
