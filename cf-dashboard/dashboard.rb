@@ -186,14 +186,14 @@ if __FILE__ == $0
 		ENV["CLASSPATH"] += ":/home/tom/data/cf-dashboard/jars/lib/" + jar + ":"
 	}
 	
-	b.build if ARGV.include?("-b") 
-
 	b.add_project Project.new("Core","core","core","src","B10_4")
 	b.add_project Project.new("Core","core","javaiopatch","src","B10_4")
 	b.add_project Project.new("Utilities","util","bootstrap","src","B10_4")
 	b.add_project Project.new("Utilities","util","server","src","B10_4")
 	b.add_project Project.new("Utilities","util","util","src","B10_4")
 	b.add_project Project.new("Utilities","util","contract","src","B10_4")
+	
+	b.build if ARGV.include?("-b") 
 
 	# GLM - having problems building these
 	# b.add_project Project.new("General Logistics Module","glm","toolkit","src","B10_4")
