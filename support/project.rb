@@ -54,16 +54,16 @@ class Project
 			template << line
 		}
 		httpd=[]
-		File.new(#{HTTPD_CONF}).each{|line|
+		File.new(HTTPD_CONF).each{|line|
 			if line =~ /#PLACEHOLDER#/
 				template.each {|t| httpd << t }
 			else
 				httpd << line
 			end
 		}
-		File.open(#{HTTPD_CONF}, "w") {|f| f.write(httpd) }
+		File.open(HTTPD_CONF, "w") {|f| f.write(httpd) }
 		puts `#{APACHECTL} restart`
-		`cp #{#{HTTPD_CONF} .`
+		`cp #{HTTPD_CONF} .`
 	end
 	def add_to_viewcvs_conf
 		viewcvs=[]
