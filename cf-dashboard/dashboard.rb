@@ -4,13 +4,14 @@ require 'ikko.rb'
 require 'rexml/document'
 
 class Project
-	attr_reader :repo, :mod, :srcdir, :tag, :title
-	def initialize(title,repo,mod,srcdir,tag)
+	attr_reader :repo, :mod, :srcdir, :tag, :title, :uses_defrunner
+	def initialize(title,repo,mod,srcdir,tag,uses_defrunner)
 		@title = title
 		@repo = repo
 		@mod = mod
 		@srcdir = srcdir
 		@tag = tag
+		@uses_defrunner = uses_defrunner
 	end
   def ant_xml_output
     preamble + "_ant.xml"
@@ -122,7 +123,8 @@ class Build
 		@projects.each {|p|
 			puts "Building " + p.title + "/" + p.mod if @verbose
 			p.check_out
-			cmd = "ant -listener org.apache.tools.ant.XmlLogger -DXmlLogger.file=#{REPORTS}#{p.ant_xml_output} -buildfile build.xml -logfile #{BUILD}#{p.ant_text_output} -Dcore.workdir=#{TMP} -Dcore.module=#{p.mod} -Dcore.cvsTag=#{p.tag} -Dcore.cvsroot=#{CVS_ROOT} -Dcore.srcdir=#{p.srcdir} -Dcore.pmd.report=#{PMD + p.pmd_output} -Dcore.cpd.report=#{CPD + p.cpd_output} timestamp compile pmd cpd"
+			defrunner = p.uses_defrunner ? "defrunner" : ""
+			cmd = "ant -listener org.apache.tools.ant.XmlLogger -DXmlLogger.file=#{REPORTS}#{p.ant_xml_output} -buildfile build.xml -logfile #{BUILD}#{p.ant_text_output} -Dcore.workdir=#{TMP} -Dcore.module=#{p.mod} -Dcore.cvsTag=#{p.tag} -Dcore.cvsroot=#{CVS_ROOT} -Dcore.srcdir=#{p.srcdir} -Dcore.pmd.report=#{PMD + p.pmd_output} -Dcore.cpd.report=#{CPD + p.cpd_output} timestamp #{defrunner} compile pmd cpd"
 			`#{cmd}`
 
 			# JavaNCSS processing
@@ -187,6 +189,7 @@ end
 if __FILE__ == $0
 	ENV['JAVA_HOME']="/usr/local/java"
 	ENV['ANT_HOME']="/usr/local/ant"
+	ENV['ANT_OPTS']="-Xmx1024m"
 	ENV['PATH']="#{ENV['PATH']}:#{ENV['JAVA_HOME']}/bin:#{ENV['ANT_HOME']}/bin"
 
 	b = Build.new(ARGV.include?("-v"))
@@ -201,33 +204,32 @@ if __FILE__ == $0
 		b.copy_up
 		exit
 	end
-	
 
-	b.add_project Project.new("Utilities","util","bootstrap","src","HEAD")
-	b.add_project Project.new("Utilities","util","server","src","HEAD")
-	b.add_project Project.new("Utilities","util","util","src","HEAD")
-	b.add_project Project.new("Utilities","util","contract","src","HEAD")
-	b.add_project Project.new("Core","core","javaiopatch","src","HEAD")
-	b.add_project Project.new("Core","core","core","src","HEAD")
-	b.add_project Project.new("Yellow Pages","yp","yp","src","HEAD")
-	b.add_project Project.new("Web Server","webserver","webserver","src","HEAD")
-	b.add_project Project.new("Web Tomcat","webserver","webtomcat","src","HEAD")
-	b.add_project Project.new("Qos","qos","qos","src","HEAD")
-	b.add_project Project.new("Quo","qos","quo","src","HEAD")
-	b.add_project Project.new("MTS","mts","mtsstd","src","HEAD")
+	b.add_project Project.new("Utilities","util","bootstrap","src","HEAD",false)
+	b.add_project Project.new("Utilities","util","server","src","HEAD",false)
+	b.add_project Project.new("Utilities","util","util","src","HEAD",false)
+	b.add_project Project.new("Utilities","util","contract","src","HEAD",false)
+	b.add_project Project.new("Core","core","javaiopatch","src","HEAD",false)
+	b.add_project Project.new("Core","core","core","src","HEAD",false)
+	b.add_project Project.new("Yellow Pages","yp","yp","src","HEAD",false)
+	b.add_project Project.new("Web Server","webserver","webserver","src","HEAD",false)
+	b.add_project Project.new("Web Tomcat","webserver","webtomcat","src","HEAD",false)
+	b.add_project Project.new("Qos","qos","qos","src","HEAD",false)
+	b.add_project Project.new("Quo","qos","quo","src","HEAD",false)
+	b.add_project Project.new("MTS","mts","mtsstd","src","HEAD",false)
+	b.add_project Project.new("Planning","planning","planning","src","HEAD",true)
+	b.add_project Project.new("Aggregation Agent","aggagent","aggagent","src","HEAD",false) # depends on Planning defs
+	b.add_project Project.new("Community","community","community","src","HEAD", false) # depends on Planning defs
+	b.add_project Project.new("General Logistics Module","glm","toolkit","src","HEAD", false)
+	b.add_project Project.new("General Logistics Module","glm","glm","src","HEAD",true) # depends on Planning defs
+	b.add_project Project.new("CSMART","csmart","csmart","src","HEAD",false) # depends on Planning defs
+	b.add_project Project.new("Vishnu Client","vishnu","vishnuClient","src","HEAD", false)
+	#b.add_project Project.new("Service Discovery","servicediscovery","servicediscovery","src","HEAD",false) # depends on Planning, glm, jena (?)
 
 	b.build if ARGV.include?("-b") 
 	if ARGV.include?("-r") 
 		File.open("index.html", "w") {|file| file.syswrite(b.render)}
 	end
 
-	# b.add_project Project.new("General Logistics Module","glm","toolkit","src","HEAD") # need to run defrunner?
-	# b.add_project Project.new("General Logistics Module","glm","glm","src","HEAD") # need to run defrunner?
-	# b.add_project Project.new("Planning","planning","planning","src","HEAD") # need to run defrunner?
-	# b.add_project Project.new("Aggregation Agent","aggagent","aggagent","src","HEAD") # depends on Planning, I think
-	# b.add_project Project.new("Community","community","community","src","HEAD") # depends on Planning
-	# b.add_project Project.new("Service Discovery","servicediscovery","servicediscovery","src","HEAD") # depends on Planning
-	# b.add_project Project.new("CSMART","csmart","csmart","src","HEAD") # depends on Planning
-	# b.add_project Project.new("Vishnu Client","vishnu","vishnuClient","src","HEAD")
 
 end
