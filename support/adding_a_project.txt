@@ -1,28 +1,17 @@
-Add the group:
-/usr/sbin/groupadd fiddle
+./project fiddle joe
 
 Add the anonymous user to fiddle
 
-Add an initial user to fiddle: joe
-
-Add any other users to fiddle by editing /etc/group
-
-cd /home/gforge/cronjobs/cvs-cron/
-
-Create docroot
-./mkdocroot fiddle joe
-
-Create cvsroot
-./cvscreate fiddle joe
-
 Edit /usr/local/etc/httpd/httpd.conf, add vhost
 Edit /usr/local/etc/httpd/cvsweb.conf, add cvsroot
+/usr/local/sbin/apachectl restart
+
 ssh -2 alp-5, edit /var/named/db.cougaar.org, add hostname, change serial
 number, restart
 
-Send email to project admin, saying "pls read new project admin doc"
+Approve it
 
-Add a new Webalizer run:
-cd /etc/webalizer/
-cat csmart-webalizer.conf | sed -e 's/csmart/cougaaride/g' >
-cougaaride-webalizer.conf
+Add project to home page
+vi /var/www/gforge-3.0/www/index_std.php
+
+Send email to project admin, saying "pls read new project admin doc"
