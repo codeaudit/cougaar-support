@@ -3,6 +3,13 @@
  DocumentRoot /var/www/gforge-projects/projectname
  CustomLog /var/log/httpd/projectname-access_log common
  ErrorLog /var/log/httpd/projectname-error_log
+ <Directory "/var/www/gforge-projects/projectname/wiki/">
+  AddHandler cgi-script .pl
+  Options ExecCGI
+  AllowOverride All
+  Order allow,deny
+  Allow from all
+ </Directory>
 </VirtualHost>
 
 #PLACEHOLDER#
