@@ -48,6 +48,7 @@ www/scm/index.php
 - hardcoded user_id == 102, blah. (?)
 common/search/SearchQuery.class
 - change seach length from 3 to 2
+- change line 96 to removed % from filtered characters hash
 License clickthru
 - modify www/frs/showfiles.php so that each file link goes to clickthru.php
 - copy www/frs/clickthru.php /var/gforge-3.0/www/frs/
