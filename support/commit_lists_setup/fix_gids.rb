@@ -7,6 +7,7 @@ dirs = [
 "/var/www/gforge-projects/",
 "/cvsroot/"
 ]
+
 map = {}
 
 conn = PostgresPR::Connection.new("gforge", "gforge")
