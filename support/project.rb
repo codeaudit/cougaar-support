@@ -22,7 +22,7 @@ class Project
 		create_webalizer
 		add_vhost	
 		add_to_viewcvs_conf
-		#setup_wiki
+		setup_wiki
 	end
 	def delete
 		puts "Delete the #{@name} vhost from #{HTTPD_CONF}"
