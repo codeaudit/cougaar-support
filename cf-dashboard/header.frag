@@ -7,7 +7,7 @@
 <table cellspacing=0 cellpadding=0>
 <tr>
 <td><img src="cougaar.png"/></td>
-<td bgcolor="#F4D495"><h1>The Cougaar Dashboard</h1></td>
+<td bgcolor="#F4D495"><h1><a href="http://cougaar.org/">The Cougaar Dashboard</a></h1></td>
 <td><img src="cougaar.png"/></td>
 </tr>
 </table>
