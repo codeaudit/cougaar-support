@@ -11,7 +11,22 @@
 <li>Our previous daily traffic was about 300-400 hits an hour - at the peak of the Slashdotting we went up to 16500 hits per hour.  Now we've settled back down to 700-800 hits per hour.
 <li>Here are the <a href="http://cougaar.org/usage_all/usage_200311.html">Webalizer traffic reports</a> for November so far - the Slashdotting day kind of <a href="http://cougaar.org/usage_all/usage_200311.html#DAYSTATS">stands out</a>.
 <li>These hit counts don't includes hits on various subdomains within CougaarForge, since those go to separate log files.  So the totals are actually a bit higher than posted here.  These are pretty representative, though.
+<li>During the course of the Slashdotting 46 new users signed up on CougaarForge, and Cougaar was downloaded over 500 times.
 <li>The dip at around 8:30 was when the Postgres database began running out of connections.  I raised <code>max_connections</code>, <code>shared_buffers</code>, and <code>sort_mem</code>, restarted the database, and all was well.  Sigh.  Learn something new every day.
+<li>Lots of folks were hitting the anonymous CVS checkouts, too; here are the pserver logs for the day:
+<pre>
+Connections:
+   Service cvspserver:
+      203.11.83.2: 21 Time(s)
+      213.23.64.82: 27 Time(s)
+      149.2.141.4: 22 Time(s)
+      152.163.190.1: 37 Time(s)
+      213.244.14.10: 6 Time(s)
+      81.50.63.163: 1 Time(s)
+      195.38.5.161: 11 Time(s)
+      12.248.129.117: 4 Time(s)
+      4.22.165.34: 2 Time(s)
+</pre>
 <li>Joe is going to provide the router traffic graphs for the day, too.
 </ul>
 </body>
