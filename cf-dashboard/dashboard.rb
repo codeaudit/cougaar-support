@@ -30,6 +30,10 @@ class Project
   def preamble
     @repo + "_" + @mod + "_" + @tag
   end
+	def check_out
+		cmd = "cd #{Build::TMP} && cvs -Q -d" + Build::CVS_ROOT + @repo + " co " + @mod + " && cd .."
+		`#{cmd}`
+	end
 end
 
 class BuildResult
@@ -48,23 +52,26 @@ class Build
 	BUILD = "build/"
 	REPORTS = "reports/"
 	WWW = "tom@cougaar.org:/var/www/gforge-projects/support/build/"
-	def initialize()
+	def initialize(verbose)
 		@projects = []
+		@verbose = verbose
    	Dir.mkdir(TMP) unless File.exist? TMP
    	Dir.mkdir(CPD) unless File.exist? CPD
    	Dir.mkdir(PMD) unless File.exist? PMD
    	Dir.mkdir(BUILD) unless File.exist? BUILD
    	Dir.mkdir(TMP + "build") unless File.exist? TMP + "build"
    	Dir.mkdir(REPORTS) unless File.exist?(REPORTS)
+		glom_classpath
 	end
 	def add_project(p)
 		@projects << p
-	end	
+	end
 	def render
 		fm=Ikko::FragmentManager.new
     fm.base_path="./"
     output=fm["header.frag"]
-		@projects.each {|p| 
+		@projects.each {|p| 	
+			puts "Rendering " + p.title + "/" + p.mod if @verbose
 			br = BuildResult.new
 			parse_ant_build_output(prepend_working_dir(p.ant_xml_output),br)
 			br.loc = parse_element(REPORTS + "/" + p.ncss_output, "javancss/ncss")
@@ -94,9 +101,20 @@ class Build
 	def get_third_party_jars
 		`cvs -Q -d:pserver:anonymous@cougaar.org:/cvsroot/core export -D tomorrow jars/lib/`
 	end
+	def glom_classpath
+		ENV["CLASSPATH"] = "/usr/local/pmd-1.3/lib/pmd-1.3.jar:"
+		ENV["CLASSPATH"] += ":/usr/local/pmd-1.3/lib/jaxen-core-1.0-fcs.jar:"
+		ENV["CLASSPATH"] += ":/usr/local/pmd-1.3/lib/saxpath-1.0-fcs.jar:"
+		ENV["CLASSPATH"] += ":/home/tom/data/cf-dashboard/#{TMP}#{BUILD}:"
+		Dir.new("jars/lib/").entries.select {|x| (x == "." or x == "..") ? nil : x}.compact.each {|jar| 
+			ENV["CLASSPATH"] += ":/home/tom/data/cf-dashboard/jars/lib/" + jar + ":"
+		}
+		end
 	def build
 		@projects.each {|p|
-			cmd = "ant -listener org.apache.tools.ant.XmlLogger -DXmlLogger.file=#{REPORTS}#{p.ant_xml_output} -buildfile build.xml -logfile #{BUILD}#{p.ant_text_output} -Dcore.workdir=#{TMP} -Dcore.repository=#{p.repo} -Dcore.module=#{p.mod} -Dcore.cvsTag=#{p.tag} -Dcore.cvsroot=#{CVS_ROOT} -Dcore.srcdir=#{p.srcdir} -Dcore.pmd.report=#{PMD + p.pmd_output} -Dcore.cpd.report=#{CPD + p.cpd_output} timestamp checkout compile pmd cpd"
+			puts "Building " + p.title + "/" + p.mod if @verbose
+			p.check_out
+			cmd = "ant -listener org.apache.tools.ant.XmlLogger -DXmlLogger.file=#{REPORTS}#{p.ant_xml_output} -buildfile build.xml -logfile #{BUILD}#{p.ant_text_output} -Dcore.workdir=#{TMP} -Dcore.module=#{p.mod} -Dcore.cvsTag=#{p.tag} -Dcore.cvsroot=#{CVS_ROOT} -Dcore.srcdir=#{p.srcdir} -Dcore.pmd.report=#{PMD + p.pmd_output} -Dcore.cpd.report=#{CPD + p.cpd_output} timestamp compile pmd cpd"
 			`#{cmd}`
 
 			# JavaNCSS processing
@@ -166,7 +184,8 @@ class Build
 end
 
 if __FILE__ == $0
-	b = Build.new
+	b = Build.new(ARGV.include?("-v"))
+
 	if ARGV.include?("-jars")
 		b.get_third_party_jars
 		exit
@@ -178,20 +197,12 @@ if __FILE__ == $0
 		exit
 	end
 
-	ENV["CLASSPATH"] = "/usr/local/pmd-1.3/lib/pmd-1.3.jar:"
-	ENV["CLASSPATH"] += ":/usr/local/pmd-1.3/lib/jaxen-core-1.0-fcs.jar:"
-	ENV["CLASSPATH"] += ":/usr/local/pmd-1.3/lib/saxpath-1.0-fcs.jar:"
-	ENV["CLASSPATH"] += ":/home/tom/data/cf-dashboard/#{Build::TMP}#{Build::BUILD}:"
-	Dir.new("jars/lib/").entries.select {|x| (x == "." or x == "..") ? nil : x}.compact.each {|jar| 
-		ENV["CLASSPATH"] += ":/home/tom/data/cf-dashboard/jars/lib/" + jar + ":"
-	}
-	
-	b.add_project Project.new("Core","core","core","src","B10_4")
-	b.add_project Project.new("Core","core","javaiopatch","src","B10_4")
 	b.add_project Project.new("Utilities","util","bootstrap","src","B10_4")
 	b.add_project Project.new("Utilities","util","server","src","B10_4")
 	b.add_project Project.new("Utilities","util","util","src","B10_4")
 	b.add_project Project.new("Utilities","util","contract","src","B10_4")
+	b.add_project Project.new("Core","core","javaiopatch","src","B10_4")
+	b.add_project Project.new("Core","core","core","src","B10_4")
 	
 	b.build if ARGV.include?("-b") 
 

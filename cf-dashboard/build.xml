@@ -13,14 +13,6 @@
 		<echo message="Checking out code from the Cougaar branch ${core.cvsTag}"/>
 	</target>
                
-    <target name="checkout">
-			<cvs command=" -Q co "
-				cvsRoot="${core.cvsroot}${core.repository}"
-				package="${core.module}"
-				tag="${core.cvsTag}"
-				dest="${core.workdir}"/>
-    </target>
-
     <target name="compile">
         <javac 
 					deprecation="true" 
