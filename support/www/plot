@@ -8,7 +8,7 @@ set ylabel "Hits"
 set xdata time
 set format x "%m/%d %H%M"
 set timefmt "%m/%d/%y %H%M"
-set xrange ["11/4/03 12:00":"11/6/03 12:00"]
+set xrange ["11/4/03 12:00":"11/6/03 08:00"]
 set yrange [0:20000]
 set output 'hits.png'
 set timefmt "%m/%d/%y/%H:%M"
