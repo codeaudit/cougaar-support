@@ -4,6 +4,24 @@ require 'fileutils'
 
 WWW_DIR_PREFIX="/var/www/gforge-projects/"
 
+=begin
+Hi Dana -
+
+OK, your new Agent Workbench project is ready to go:
+
+http://cougaar.org/projects/awb/
+
+You might want to read thru the new project admin checklist here:
+
+http://cougaar.org/docman/view.php/7/7/new_project_admin_checklist.txt
+
+Please let me know if you have any questions, thanks!
+
+Yours,
+
+Tom
+=end
+
 class Project
   CVSROOT="/cvsroot/"
   VIEWCVS_CONF="/usr/local/viewcvs/viewcvs.conf"
