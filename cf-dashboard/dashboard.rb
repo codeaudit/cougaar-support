@@ -172,7 +172,7 @@ class Build
 		REPORTS + name
 	end
 	def copy_up
-		`scp index.html cougaar.png #{WWW}`
+		`scp *.html cougaar.png #{WWW}`
 		`scp pmd/* #{WWW}/pmd/`
 		`scp cpd/* #{WWW}/cpd/`
 		`scp build/* #{WWW}/build/`
