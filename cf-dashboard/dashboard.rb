@@ -1,6 +1,7 @@
 #!/usr/local/bin/ruby
 
-require 'ikko.rb'
+require 'rubygems'
+require_gem 'ikko'
 require 'fileutils'
 require 'rexml/document'
 
