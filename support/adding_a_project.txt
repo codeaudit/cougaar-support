@@ -1,1 +1,21 @@
-Add it
+
+Add the group:
+/usr/sbin/groupadd fiddle
+
+Add the anonymous user to the group
+
+Add an initial user to the group: ??
+
+Add any other users to the group by editing /etc/group
+
+Create docroot
+
+Create cvsroot
+
+Edit /usr/local/etc/httpd/httpd.conf, add vhost
+ssh -2 alp-5, edit /var/named/db.cougaar.org, add hostname, change serial
+number, restart
+
+
+
+
