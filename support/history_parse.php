@@ -8,26 +8,19 @@ require_once('squal_pre.php');
  * '~/CVSROOT/history' file, building agregate stats on the number of
  * checkouts, commits, and adds to each project over the past 24 hours.
  *
- * @version   $Id: history_parse.php,v 1.1 2003-08-04 21:24:25 tom Exp $
+ * @version   $Id: history_parse.php,v 1.2 2003-08-05 17:55:36 tom Exp $
  */
 
 
 $cvsroot="/cvsroot";
 
-function rundate($group, $group_id, $mon, $day, $year, $day_begin, $day_end) {
+function rundate($readfile, $group_id, $mon, $day, $year, $day_begin, $day_end) {
 	global $cvsroot;
 	$cvs_co=$cvs_commit=$cvs_add=0;
 	
-	$readfile = file("$cvsroot/$group/CVSROOT/history");
-	if (!readfile) {
-		print "Unable to open history for $group\n";
-		return;
-	}
-
-	$fields=array();
-	for ($k=0; $k<=count($readfile)-1; $k++) {
+	for ($i=0; $i<=count($readfile)-1; $i++) {
 		# Split the cvs history entry into its 6 fields.
-		$fields = explode('|',trim($readfile[$k]));
+		$fields = explode('|',trim($readfile[$i]));
 		$cvstime=$fields[0];	
 		$user=$fields[1];	
 		$curdir=$fields[2];	
@@ -51,9 +44,9 @@ function rundate($group, $group_id, $mon, $day, $year, $day_begin, $day_end) {
 	}
 
 	$sql = "INSERT INTO stats_cvs_group (month,day,group_id,checkouts,commits,adds) VALUES ('$year$mon','$day','$group_id',$cvs_co,$cvs_commit,$cvs_add)";
-	print $sql."\n";
-	$res = db_query($sql);	
-	print db_error();
+	#print $sql."\n";
+	#$res = db_query($sql);	
+	#print db_error();
 }
 
 if (!chdir($cvsroot)) {
@@ -75,7 +68,13 @@ for ($i=0; $i<count($ids); $i++) {
 	
 	print "Processing group $group\n\n";
 	flush();
-	# process stats for the last several months for this group
+	
+	$readfile = file("$cvsroot/$group/CVSROOT/history");
+	if (!readfile) {
+		print "Unable to open history for $group\n";
+		return;
+	}
+
 	for ($j =0; $j<120; $j++) {
   	
 		$day_begin=mktime(0,0,0,5,1 + $j, 2003);
@@ -85,7 +84,7 @@ for ($i=0; $i<count($ids); $i++) {
   	
 		$day_end=mktime(0,0,0,5,1 + $j +1, 2003);
 
-		rundate($group, $group_id, $month, $day, $year, $day_begin, $day_end);
+		rundate($readfile, $group_id, $month, $day, $year, $day_begin, $day_end);
 	}
 }
 exit;
