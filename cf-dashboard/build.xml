@@ -60,31 +60,23 @@
 		</execon>
 	</target>
 
-	<target name="pmd" if="core.usesPMD">
-		<delete file="${core.pmd.reportFile}"/>
+	<target name="pmd">
+		<delete file="${core.pmd.report}"/>
 		<taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask"/>
-			<pmd rulesetfiles="${core.pmd.rulesettype}" shortFilenames="true">
-				<formatter toFile="${core.pmd.reportFile}" type="html"/>
-				<fileset dir="${core.srcdir}">
+			<pmd rulesetfiles="rulesets/unusedcode.xml" shortFilenames="true">
+				<formatter toFile="${core.pmd.report}" type="html"/>
+				<fileset dir="${core.workdir}/${core.module}/${core.srcdir}">
 					<include name="**/*.java"/>
-					<exclude name="**/edu/jhuapl/**/*.java"/>
-					<exclude name="**/cougaar/core/security/crypto/ldap/admin/**/*.java"/>
-					<exclude name="**/org/cougaar/core/security/test/**/*.java"/>
-					<exclude name="**/com/lmco/ms/ultralog/TaskBrowser.java"/>
 				</fileset>
 			</pmd>
 	</target>
 
-	<target name="cpd" if="core.usesCPD">
-			<delete file="${core.cpd.reportFile}"/>
+	<target name="cpd">
+			<delete file="${core.cpd.report}"/>
 	   <taskdef name="cpd" classname="net.sourceforge.pmd.cpd.CPDTask" />
-	   <cpd minimumTokenCount="100" outputFile="${core.cpd.reportFile}">
-				<fileset dir="${core.srcdir}">
+	   <cpd minimumTokenCount="100" outputFile="${core.cpd.report}">
+				<fileset dir="${core.workdir}/${core.module}/${core.srcdir}">
 					<include name="**/*.java"/>
-					<exclude name="**/edu/jhuapl/**/*.java"/>
-					<exclude name="**/cougaar/core/security/crypto/ldap/admin/**/*.java"/>
-					<exclude name="**/org/cougaar/core/security/test/**/*.java"/>
-					<exclude name="**/com/lmco/ms/ultralog/TaskBrowser.java"/>
 				</fileset>
 			</cpd>
 	</target>

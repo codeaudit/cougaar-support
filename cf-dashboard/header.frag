@@ -19,5 +19,7 @@
 <th>Branch</th>
 <th>Built<br>at</th>
 <th>Lines<br>of<br>code</th>
+<th>PMD<br>warnings</th>
+<th>Copy/paste<br>warnings</th>
 </tr>
 
