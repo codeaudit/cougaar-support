@@ -1,0 +1,33 @@
+mv /var/www/gforge-3.0/www /tmp/gforge_bkp/
+mv /var/www/gforge-3.0/common /tmp/gforge_bkp/
+
+
+cvs export -d tmp/ -D tomorrow gforge
+mv tmp gforge
+tar -zcf copyover.tar.gz gforge/
+scp copyover.tar.gz gforge@cougaarforge.cougaar.org:tmp/
+
+ssh into CougaarForge
+
+cd tmp/
+tar -zxf copyover.tar.gz
+cd /var/www/gforge-3.0/
+mv ~/tmp/gforge/www/ .
+mv ~/tmp/gforge/common/ .
+
+cp -r /tmp/gforge_bkp/www/icons/ www/
+cp -r /tmp/gforge_bkp/www/usage/ www/
+cp -r /tmp/gforge_bkp/www/usage_all/ www/
+cp -r /tmp/gforge_bkp/www/docsredirect/ www/
+cp /tmp/gforge_bkp/www/project/showfiles.php www/project/
+cp /tmp/gforge_bkp/www/project/clickthru.php www/project/
+
+Copy www/include/features_boxes stuff back in
+
+
+================================
+To find changed stuff:
+find /var/www/gforge-3.0/ -type f -ctime +30
+
+
+
