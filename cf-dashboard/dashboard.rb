@@ -202,30 +202,32 @@ if __FILE__ == $0
 		exit
 	end
 
-	b.add_project Project.new("Utilities","util","bootstrap","src","B10_4")
-	b.add_project Project.new("Utilities","util","server","src","B10_4")
-	b.add_project Project.new("Utilities","util","util","src","B10_4")
-	b.add_project Project.new("Utilities","util","contract","src","B10_4")
-	b.add_project Project.new("Core","core","javaiopatch","src","B10_4")
-	b.add_project Project.new("Core","core","core","src","B10_4")
-	b.add_project Project.new("Yellow Pages","yp","yp","src","B10_4")
-	b.add_project Project.new("Web Server","webserver","webserver","src","B10_4")
-	b.add_project Project.new("Web Tomcat","webserver","webtomcat","src","B10_4")
-	b.add_project Project.new("Qos","qos","qos","src","B10_4")
-	b.add_project Project.new("Quo","qos","quo","src","B10_4")
+	
+	b.add_project Project.new("Utilities","util","bootstrap","src","HEAD")
+	b.add_project Project.new("Utilities","util","server","src","HEAD")
+	b.add_project Project.new("Utilities","util","util","src","HEAD")
+	b.add_project Project.new("Utilities","util","contract","src","HEAD")
+	b.add_project Project.new("Core","core","javaiopatch","src","HEAD")
+	b.add_project Project.new("Core","core","core","src","HEAD")
+	b.add_project Project.new("Yellow Pages","yp","yp","src","HEAD")
+	b.add_project Project.new("Web Server","webserver","webserver","src","HEAD")
+	b.add_project Project.new("Web Tomcat","webserver","webtomcat","src","HEAD")
+	b.add_project Project.new("Qos","qos","qos","src","HEAD")
+	b.add_project Project.new("Quo","qos","quo","src","HEAD")
+	b.add_project Project.new("MTS","mts","std","src","HEAD")
 
 	b.build if ARGV.include?("-b") 
 	if ARGV.include?("-r") 
 		File.open("index.html", "w") {|file| file.syswrite(b.render)}
 	end
 
-	# b.add_project Project.new("General Logistics Module","glm","toolkit","src","B10_4") # need to run defrunner?
-	# b.add_project Project.new("General Logistics Module","glm","glm","src","B10_4") # need to run defrunner?
-	# b.add_project Project.new("Planning","planning","planning","src","B10_4") # need to run defrunner?
-	# b.add_project Project.new("Aggregation Agent","aggagent","aggagent","src","B10_4") # depends on Planning, I think
-	# b.add_project Project.new("Community","community","community","src","B10_4") # depends on Planning
-	# b.add_project Project.new("Service Discovery","servicediscovery","servicediscovery","src","B10_4") # depends on Planning
-	# b.add_project Project.new("CSMART","csmart","csmart","src","B10_4") # depends on Planning
-	# b.add_project Project.new("Vishnu Client","vishnu","vishnuClient","src","B10_4")
+	# b.add_project Project.new("General Logistics Module","glm","toolkit","src","HEAD") # need to run defrunner?
+	# b.add_project Project.new("General Logistics Module","glm","glm","src","HEAD") # need to run defrunner?
+	# b.add_project Project.new("Planning","planning","planning","src","HEAD") # need to run defrunner?
+	# b.add_project Project.new("Aggregation Agent","aggagent","aggagent","src","HEAD") # depends on Planning, I think
+	# b.add_project Project.new("Community","community","community","src","HEAD") # depends on Planning
+	# b.add_project Project.new("Service Discovery","servicediscovery","servicediscovery","src","HEAD") # depends on Planning
+	# b.add_project Project.new("CSMART","csmart","csmart","src","HEAD") # depends on Planning
+	# b.add_project Project.new("Vishnu Client","vishnu","vishnuClient","src","HEAD")
 
 end
