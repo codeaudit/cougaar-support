@@ -6,7 +6,7 @@ class Project
 	HTTPD_CONF="/usr/local/etc/httpd/httpd.conf"
 	HTTPD_LOG_DIR="/usr/local/var/httpd/log/"
 	REPLACE_PROJECT="csmart"
-	APACHECTL="/usr/local/apache/bin/apachectl"
+	APACHECTL="/usr/local/sbin/apachectl"
 	attr_reader :name
 	def initialize(name)
 		@name = name
