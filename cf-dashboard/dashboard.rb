@@ -91,6 +91,7 @@ class Build
 		output
 	end
 	def get_third_party_jars
+		`cvs -Q -d:pserver:anonymous@cougaar.org:/cvsroot/core export -D tomorrow jars/lib/`
 	end
 	def build
 		get_third_party_jars
@@ -162,14 +163,27 @@ class Build
 end
 
 if __FILE__ == $0
+	b = Build.new
+
+	if ARGV.include?("-jars")
+		b.get_third_party_jars
+		exit
+	end
+
 	ENV["CLASSPATH"] = "/usr/local/pmd-1.3/lib/pmd-1.3.jar:"
 	ENV["CLASSPATH"] += ":/usr/local/pmd-1.3/lib/jaxen-core-1.0-fcs.jar:"
 	ENV["CLASSPATH"] += ":/usr/local/pmd-1.3/lib/saxpath-1.0-fcs.jar:"
-	b = Build.new
-	b.add_project Project.new("core","javaiopatch","src","B10_4")
-	b.add_project Project.new("util","bootstrap","src","B10_4")
+	
+
+
+	b.add_project Project.new("util","contract","src","B10_4")
 
 	b.build if ARGV.include?("-b") 
+
+	b.add_project Project.new("core","javaiopatch","src","B10_4")
+	b.add_project Project.new("util","bootstrap","src","B10_4")
+	b.add_project Project.new("util","server","src","B10_4")
+
 	if ARGV.include?("-r") 
 		File.open("index.html", "w") {|file| file.syswrite(b.render)}
 	end
