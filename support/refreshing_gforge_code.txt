@@ -32,6 +32,9 @@ cp -R /tmp/gforgebkp/www/themes/savannah www/themes/
 
 www/project/admin/index.php - tarballs link should be gone 
 
+www/forum/include/ForumHTML.class - change to remove admin link from non-admin
+viewers - hardcoded user_id == 102, blah.
+
 Change in www/download.php Header("Content-type: application/octet-stream");
 
 Run any new SQL updates
