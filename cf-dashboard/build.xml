@@ -22,7 +22,7 @@
 
     <target name="checkout">
 			<cvs command=" -Q co "
-				cvsRoot="${core.cvsdir}/${core.repository}"
+				cvsRoot="${core.repository}"
 				package="${core.module}"
 				tag="${core.cvsTag}"
 				dest="${workDir}"/>

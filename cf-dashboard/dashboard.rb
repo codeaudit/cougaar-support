@@ -1,16 +1,31 @@
 #!/usr/local/bin/ruby
 
 class Project
-	def initialize(repo,mod,srcdir)
+	attr_reader :repo, :mod, :srcdir, :tag
+	def initialize(repo,mod,srcdir,tag)
 		@repo = repo
 		@mod = mod
 		@srcdir = srcdir
+		@tag = tag
 	end
+  def ant_xml_output
+    preamble + "_ant.xml"
+  end
+  def ant_text_output
+    preamble + "_ant.txt"
+  end
+  def preamble
+    @repo + "_" + @mod + "_" + @tag
+  end
 end
 
 class Build 
-	def initialize
+	def initialize(reports_dir)
 		@projects = []
+		@reports_dir = reports_dir
+		@working_dir="tmp_" + Time.now.usec.to_s
+   	Dir.mkdir(@working_dir)
+   	Dir.mkdir(@reports_dir) unless File.exist?(@reports_dir)
 	end
 	def add_project(p)
 		@projects << p
@@ -18,14 +33,18 @@ class Build
 	def get_third_party_jars
 	end
 	def build
-		
-
+		get_third_party_jars()
+		@projects.each {|p|
+			`ant -v -listener org.apache.tools.ant.XmlLogger -DXmlLogger.file=#{@reports_dir}#{p.ant_xml_output} -buildfile build.xml -logfile #{@reports_dir}#{p.ant_text_output} -Dcore.working=#{@working_dir} -Dcore.repository=#{p.repo} -Dcore.module=#{p.mod} -Dcore.cvsTag=#{p.tag} checkout`
+		}
+	end
+	def clean		
+		`rm -rf #{working_dir}`
+	end
 end
 
 if __FILE__ == $0
-	b = Build.new
-	b.add Project.new("/cvsroot/core","core","src")
+	b = Build.new("reports/")
+	b.add_project Project.new("/cvsroot/core","core","src","B10_4")
 	b.build
-	
-	puts "HI"
 end
