@@ -167,14 +167,14 @@ end
 
 if __FILE__ == $0
 	b = Build.new
-
 	if ARGV.include?("-jars")
 		b.get_third_party_jars
 		exit
-	end
-
-	if ARGV.include?("-cleanclasses")
+	elsif ARGV.include?("-cleanclasses")
 		b.clean_classes
+		exit
+	elsif ARGV.include?("-copy")
+		b.copy_up
 		exit
 	end
 
@@ -186,18 +186,20 @@ if __FILE__ == $0
 		ENV["CLASSPATH"] += ":/home/tom/data/cf-dashboard/jars/lib/" + jar + ":"
 	}
 	
-	b.add_project Project.new("Core","core","core","src","B10_4")
 	b.build if ARGV.include?("-b") 
 
+	b.add_project Project.new("Core","core","core","src","B10_4")
 	b.add_project Project.new("Core","core","javaiopatch","src","B10_4")
 	b.add_project Project.new("Utilities","util","bootstrap","src","B10_4")
 	b.add_project Project.new("Utilities","util","server","src","B10_4")
 	b.add_project Project.new("Utilities","util","util","src","B10_4")
 	b.add_project Project.new("Utilities","util","contract","src","B10_4")
 
+	# GLM - having problems building these
+	# b.add_project Project.new("General Logistics Module","glm","toolkit","src","B10_4")
+	# b.add_project Project.new("General Logistics Module","glm","glm","src","B10_4")
 
 	if ARGV.include?("-r") 
 		File.open("index.html", "w") {|file| file.syswrite(b.render)}
 	end
-	b.copy_up if ARGV.include?("-copy") 
 end
