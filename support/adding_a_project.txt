@@ -1,7 +1,7 @@
 ./project fiddle joe
 
 Edit /usr/local/etc/httpd/httpd.conf, add vhost
-Edit /usr/local/etc/httpd/cvsweb.conf, add cvsroot
+Edit /usr/local/viewcvs/viewcvs.conf, add cvsroot
 /usr/local/sbin/apachectl restart
 
 Approve it
