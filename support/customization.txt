@@ -1,0 +1,66 @@
+If upgrading from CVS:
+-cvs export -d tmp/ -D tomorrow gforge
+-mv tmp gforge
+-tar -zcf copyover.tar.gz gforge/
+-scp copyover.tar.gz gforge@cougaar.org:tmp/
+else just get tarball with wget
+
+mv /var/www/gforge-3.0/www /tmp/gforge_bkp/
+Run new db/ scripts
+Move old www/ and common/ to upgrades dir
+Copy new www/ and common/ in
+chown -R gforge:gforge www/ common/
+Copy www/.htaccess back in
+Copy www/usage/ back in
+
+cp -R tmp/gforge_bkp/www/icons/ www/
+cp -R tmp/gforge_bkp/www/errata/ www/
+cp -R tmp/gforge_bkp/www/documents/ www/
+
+cp -R tmp/gforge_bkp/www/themes/cougaarforge www/themes/
+cp -R tmp/gforge_bkp/www/themes/savannah www/themes/
+cp tmp/gforge_bkp/www/index_std.php www/
+Move in new local.inc properties file, copy in all customizations
+Restart web server
+
+cp tmp/gforge_bkp/www/register/projectinfo.php www/register/
+- FIXME, new stuff here
+cp tmp/gforge_bkp/www/robots.txt www/
+cp -R tmp/gforge_bkp/www/docs/site/ www/docs/site
+
+www/export/index.php
+- remove various broken items
+www/themes/savannah/menu.php
+- changed call to Group.usesCVS to usesSCM
+www/project/admin/index.php 
+- remove tarballs link (TODO, fix this)
+- remove 'htdocs' 
+www/include/project_home.php 
+- Add Webalizer link
+- Add array and blurb for link to Bugzilla
+www/include/languages/Base.tab 
+- "New user with SSL" -> New user
+www/include/features_boxes.php 
+	- Remove "Highest Ranked Users"
+	- Add Webalizer link to usage
+ 	- Remove group_id = 7 from top downloads
+ 	- Reduce "active projects" list from 20 to 10
+common/search/SearchQuery.class
+- change search length from 3 to 2
+- change line 96 to removed % from filtered characters hash
+License clickthru
+- modify www/frs/index.php so that each file link goes to clickthru.php
+- note exclusion of group_id=7
+- copy www/frs/clickthru.php /var/gforge-3.0/www/frs/
+- note that license URL and enable/disable are specified in /etc/gforge/local.inc
+www/docman/view.php
+- tweaking types to ensure PDF mime type was set when appropriate
+cp www/themes/gforge/images/box-*.png www/themes/cougaarforge/images/
+cp www/themes/gforge/images/clear.png www/themes/cougaarforge/images/
+www/themes/savannah/menu.php  - FIXME
+- copy in code from usemodwiki plugin groupmenu hook
+Copy in new cron jobs
+
+================================
+To find changed stuff:
+find /var/www/gforge-3.0/ -type f -ctime +30
