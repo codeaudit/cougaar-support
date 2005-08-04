@@ -15,10 +15,10 @@
 
 	  <path id="project.class.path">
 					<pathelement location="${buildDir}"/>
-					<fileset dir="/home/tom/cougaarforge/cf-dashboard/jars/lib/">
+					<fileset dir="/usr/local/dashboard/jars/lib/">
 						<include name="*.jar"/>
 					</fileset>
-					<fileset dir="/usr/local/pmd-1.9/lib/">
+					<fileset dir="/usr/local/dashboard/pmd-3.2/">
 						<include name="*.jar"/>
 					</fileset>
 		</path>
@@ -45,7 +45,7 @@
 
 	<target name="defrunner">
 		<execon executable="java" parallel="false" failonerror="false">
-			<arg line="-classpath ${buildDir}:/home/tom/data/cougaarforge/cf-dashboard/build.jar org.cougaar.tools.build.DefRunner" />
+			<arg line="-classpath ${buildDir}:/usr/local/dashboard/build.jar org.cougaar.tools.build.DefRunner" />
 			<fileset dir="${core.workdir}/${core.module}/${core.srcdir}" >
 				<include name="**/*.def" />
 			</fileset>

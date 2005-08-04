@@ -134,9 +134,9 @@ class Build
 		`cvs -Q -d#{CVS_ROOT}core export -D tomorrow #{Build::JARS}`
 	end
 	def glom_classpath
-		ENV["CLASSPATH"] = "/usr/local/dashboard/pmd-3.2/lib/pmd-3.2.jar:"
-		ENV["CLASSPATH"] += "/usr/local/dashboard/pmd-3.2/lib/jaxen-core-1.0-fcs.jar:"
-		ENV["CLASSPATH"] += "/usr/local/dashboard/pmd-3.2/lib/saxpath-1.0-fcs.jar:"
+		ENV["CLASSPATH"] = "/usr/local/dashboard/pmd-3.2/pmd-3.2.jar:"
+		ENV["CLASSPATH"] += "/usr/local/dashboard/pmd-3.2/jaxen-core-1.0-fcs.jar:"
+		ENV["CLASSPATH"] += "/usr/local/dashboard/pmd-3.2/saxpath-1.0-fcs.jar:"
 		puts "CP == #{ENV["CLASSPATH"]}"
 	end
 	def build
