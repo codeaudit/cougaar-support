@@ -102,15 +102,15 @@ class Summary
 end
 
 class Build 
-	CVS_ROOT = ":pserver:anonymous@cougaar.org:/cvsroot/"
-	BUILD_ROOT = "/home/tom/cougaarforge/cf-dashboard/"
+	CVS_ROOT = "/cvsroot/"
+	BUILD_ROOT = "/usr/local/dashboard/"
 	TMP = "working/"
 	PMD = "pmd/"
 	CPD = "cpd/"
 	BUILD = "build/"
 	REPORTS = "reports/"
 	JARS = "jars/lib/"
-	WWW = "tom@cougaar.org:/var/www/gforge-projects/support/build/"
+	WWW = "/var/www/gforge-projects/support/build/"
 	def initialize(verbose, pg)
 		@pg = pg
 		@verbose = verbose
@@ -209,10 +209,10 @@ class Build
 		REPORTS + name
 	end
 	def copy_up
-		`scp *.html cougaar.png #{WWW}`
-		`scp pmd/* #{WWW}/pmd/`
-		`scp cpd/* #{WWW}/cpd/`
-		`scp build/* #{WWW}/build/`
+		`cp *.html cougaar.png #{WWW}`
+		`cp -R pmd/* #{WWW}/pmd/`
+		`cp -R cpd/* #{WWW}/cpd/`
+		`cp -R build/* #{WWW}/build/`
 	end
 	def clean_classes
 		`rm -rf #{TMP}#{BUILD}`
@@ -249,7 +249,7 @@ class Build
 end
 
 if __FILE__ == $0
-	Dir.chdir("/home/tom/cougaarforge/cf-dashboard/")
+	Dir.chdir("/usr/local/dashboard/")
 	pg = ProjectGroup.new
 	pg.delete_all_but_first if ARGV.include?("-one")
 
