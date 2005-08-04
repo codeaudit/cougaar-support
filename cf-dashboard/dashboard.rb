@@ -134,9 +134,9 @@ class Build
 		`cvs -Q -d#{CVS_ROOT}core export -D tomorrow #{Build::JARS}`
 	end
 	def glom_classpath
-		ENV["CLASSPATH"] = "/usr/local/pmd-1.9/lib/pmd-1.9.jar:"
-		ENV["CLASSPATH"] += "/usr/local/pmd-1.9/lib/jaxen-core-1.0-fcs.jar:"
-		ENV["CLASSPATH"] += "/usr/local/pmd-1.9/lib/saxpath-1.0-fcs.jar:"
+		ENV["CLASSPATH"] = "/usr/local/dashboard/pmd-3.2/lib/pmd-3.2.jar:"
+		ENV["CLASSPATH"] += "/usr/local/dashboard/pmd-3.2/lib/jaxen-core-1.0-fcs.jar:"
+		ENV["CLASSPATH"] += "/usr/local/dashboard/pmd-3.2/lib/saxpath-1.0-fcs.jar:"
 		puts "CP == #{ENV["CLASSPATH"]}"
 	end
 	def build
@@ -210,9 +210,9 @@ class Build
 	end
 	def copy_up
 		`cp *.html cougaar.png #{WWW}`
-		`cp -R pmd/* #{WWW}/pmd/`
-		`cp -R cpd/* #{WWW}/cpd/`
-		`cp -R build/* #{WWW}/build/`
+		`cp -R pmd/* #{WWW}/pmd/`  if Dir.glob("pmd/*").size > 0
+		`cp -R cpd/* #{WWW}/cpd/` if Dir.glob("cpd/*").size > 0
+		`cp -R build/* #{WWW}/build/`  if Dir.glob("build/*").size > 0
 	end
 	def clean_classes
 		`rm -rf #{TMP}#{BUILD}`
@@ -244,7 +244,11 @@ class Build
     return result
   end
   def parse_element(f, name)
-    (REXML::Document.new(File.new(f))).elements[name].text
+		return "" if !File.exist?(f) || File.size(f) == 0
+		doc = REXML::Document.new(File.new(f))
+    e = doc.elements[name]
+		return "" if e.nil?
+		e.text
   end
 end
 
