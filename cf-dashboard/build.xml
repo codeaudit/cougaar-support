@@ -29,9 +29,9 @@
 					deprecation="true" 
 					debug="true" 
 					optimize="false" 
-					target="1.5" 
-					source="1.5" 
-					compiler="javac1.4" 
+					target="1.6" 
+					source="1.6" 
+					compiler="javac" 
 					srcdir="${core.workdir}/${core.module}/${core.srcdir}" 
 					destdir="${buildDir}">
 					<classpath refid="project.class.path"/>
